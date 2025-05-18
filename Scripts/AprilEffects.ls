@@ -524,7 +524,7 @@ on applyWireBunch me, q, c, eftc
           colr = color(0, 0, 255)
         3:
           colr = color(255, 0, 0)
-        otherwise
+        otherwise:
           colr = color(0, 255, 0)
       end case
       -- set the  area of headpos based on what wall it will touch

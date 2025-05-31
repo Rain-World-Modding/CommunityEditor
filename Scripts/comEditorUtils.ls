@@ -20,7 +20,7 @@ on clearLogs()
   fl.closeFile()
 end
 
-on prepareRelease()
+on prepareRelease(shouldHalt)
   member("logText").text = ""
   member("editorConfig").text = ""
   member("DEBUGTR").text = ""
@@ -42,7 +42,7 @@ on prepareRelease()
   end repeat
   
   go the frame
-  _movie.halt()
+  if shouldHalt then _movie.halt()
 end
 
 on checkDebugKeybinds()
@@ -51,7 +51,7 @@ on checkDebugKeybinds()
   else if checkCustomKeybind(#OutputInternalLog, ["I","L",48]) then -- tab+i+l
     outputInternalLog()
   else if checkCustomKeybind(#PrepareInternalsForRelease, ["P","I",48]) then -- tab+P+I
-    prepareRelease()
+    prepareRelease(TRUE)
   else if checkCustomKeybind(#RestartComputer, [48,"X","C","P",36]) then -- thanks drycrycrystal for suggesting this
     _system.restart() -- restart computer lmao
   else if checkCustomKeybind(#ShutdownComputer, VOID) then
@@ -121,6 +121,7 @@ on exportAll()
   --type objFileio: dynamic
   --type objImg: dynamic
   --type return: void
+  prepareRelease(FALSE)
   pth = the moviePath & "Export\"
   objFileio = new xtra("fileio")
   objImg = new xtra("ImgXtra")

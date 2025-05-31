@@ -280,6 +280,7 @@ on checkKey me, key
       rtrn = 1
     end if
   end if
+  gTEProps.lastKeys[symbol(key)] = gTEProps.keys[symbol(key)]
   return rtrn
 end
 

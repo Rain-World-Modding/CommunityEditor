@@ -144,8 +144,10 @@ on exportAll()
       if (m.type = #bitmap) then
         objImg.ix_saveImage(["image": m.image, "filename": fname & ".png", "format": "PNG"])
       else if (m.type = #script) then
-        createFile(objFileio, pth & m.name & ".ls")
-        objFileio.openFile(pth & m.name & ".ls", 0)
+        scriptNm = pth & m.name & ".ls"
+        if getBoolConfig("Include script category") then scriptNm = pth & c.name & "_" & m.name & ".ls"
+        createFile(objFileio, scriptNm)
+        objFileio.openFile(scriptNm, 0)
         objFileio.writeString(m.scriptText)
         objFileio.closeFile()
       else if (m.type = #text) then

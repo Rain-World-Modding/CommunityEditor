@@ -668,39 +668,38 @@ on ApplyJoarFW me, q, c, eftc
         if t2/v.float < sizeLerp then
           yurp =( (t2/v.float)/sizeLerp)
           --ease in lerp
-          thickness = lerp(baseThickness, targetThickness, 1 - sqrt(1- power(yurp, 2)))
+          thickness = lerp(baseThickness, targetThickness, 1 - sqrt(1 - power(yurp, 2)))
         else 
-          thickness = lerp(targetThickness, baseThickness, ((t2/v.float)-sizeLerp)/sizeLerp)
+          thickness = lerp(targetThickness, baseThickness, ((t2 / v.float) - sizeLerp) / sizeLerp)
         end if
         
         bezQd = rect(bezQd, bezQd) + rect(-thickness,-thickness,thickness,thickness)
         member("layer"&string(layer)).image.copyPixels(member("blob").image, bezQd, member ("blob").image.rect, {#color:colr, #ink:36})
-        effectLerp = lerp(0, 0.8, totalT/totalV.float)
+        effectLerp = lerp(0, 0.8, totalT / totalV.float)
         copyPixelsToEffectColor (gdLayer, layer, bezQd, "blob", member("blob").image.rect, 0.5, effectLerp)
       end repeat
     end repeat
     
     --draw head 
-    qd = rect(-targetThickness*2, -targetThickness*6, targetThickness*2, targetThickness*6) + rect(points[points.count][1].locH,points[points.count][1].locV,points[points.count][1].locH, points[points.count][1].locV)
-    qd = rotateToQuad(qd, points[points.count][2])
+    qd = rect(-targetThickness * 6, -targetThickness *  2, targetThickness * 6, targetThickness * 2) + rect(points[points.count][1].locH,points[points.count][1].locV,points[points.count][1].locH, points[points.count][1].locV)
+    qd = rotateToQuad(qd, points[points.count][2]+90)
     repeat with dep = 1 to random(3)
-      --layer = ((lsL[random(lsL.count)]-1)*10) + random(9) - 1
+      
       if dep = 1 then 
         member("layer"&string(layer)).image.copyPixels(member("BoxGrubGraf1").image, qd, member ("BoxGrubGraf1").image.rect, {#color:colr, #ink:36})
         copyPixelsToEffectColor (gdLayer, layer, qd, "BoxGrubGrad2", member("BoxGrubGrad2").image.rect, 0.5, 1)
       else 
-        dmin = (((lsL[1]-1)*10))
-        dmax = (((lsL[lsL.count]-1)*10) + 9 )
+        dmin = (((lsL[1] - 1) * 10))
+        dmax = (((lsL[lsL.count] - 1) * 10) + 9 )
         
-        if layer<10 and layer > 5 then 
+        if layer < 10 and layer > 5 then 
           dmin = 5  
         end if
         
-        --restrict(layer + r,(((lsL[1]-1)*10)-1 ), (((lsL[lsL.count]-1)*10) + 9 - 1)) 
-        member("layer"&string(restrict(layer-dep, dmin, dmax))).image.copyPixels(member("BoxGrubGraf2").image, qd, member ("BoxGrubGraf2").image.rect, {#color:colr, #ink:36})
+        member("layer"&string(restrict(layer - dep, dmin, dmax))).image.copyPixels(member("BoxGrubGraf2").image, qd, member ("BoxGrubGraf2").image.rect, {#color:colr, #ink:36})
         --erase hole 
         
-        copyPixelsToEffectColor (gdLayer, restrict(layer-dep, dmin, dmax), qd, "BoxGrubGrad2", member("BoxGrubGrad2").image.rect, 0.5, 1)
+        copyPixelsToEffectColor (gdLayer, restrict(layer - dep, dmin, dmax), qd, "BoxGrubGrad2", member("BoxGrubGrad2").image.rect, 0.5, 1)
       end if
       
       

@@ -188,7 +188,7 @@ on renderVoxelProp(prop, dp, qd, mdPoint, propData)
     gtRect = rect(0, 1, prop.sz.locH * 20, prop.sz.locV * 20 + 1) 
     gtRect = gtRect + rect(gtRect.width * var, gtRect.height * ps, gtRect.width * var, gtRect.height * ps)
     repeat with q2 = 1 to prop.repeatL[q]
-      if rockType and [12, 8, 4].getPos(q2) then
+      if rockType and variedStandard and [12, 8, 4].getPos(q2) then
         -- Random variation in rock types
         var = random(prop.vars)
         gtRect = rect(0, 1, prop.sz.locH * 20, prop.sz.locV * 20 + 1) 
@@ -1790,7 +1790,205 @@ on renderLongProp(qd, prop, data, dp)
           member("layer" & restrict(dp+d, 0, 29)).image.copyPixels(member("pxl").image, QD, rect(0,0,1,1), {#ink:36, #color:color(255, 0, 0)})
         end repeat
         
+        -- April
+      "Moss Drop", "Moss Drop A", "Moss Drop B":
+        --dir = normalized vector    
+        --calculate distance and width of moss
+        dist = sqrt(power(A.locV - B.locV, 2) + power(A.locH - B.locH, 2))
+        dist = dist / 8
+        mossWidth = restrict(dist, 20, 30)
+        depthOffset = 0
         
+        --iterating through list  of points to prevent feedback with collision code.
+        points = []
+        repeat with t = 1 to dist.integer
+          --lerps to go from the top of the long to the bottom. 1 is the top
+          percent = t / dist.float
+          qd = lerpPnt(B, A, percent)
+          --depth shenanigins, will try to hang "in front of" a block if its within the range and the point at which it's gonna place isnt white
+          depthRange = restrict(dp, 0, 29)
+          points.add([qd, restrict(depthRange - depthOffset, 0, 29)])
+          depthCheck = true
+          
+          repeat while depthCheck then
+            if restrict(depthRange - depthOffset, 0, 29) = 0 then
+              depthCheck = false
+            else if member("layer" & restrict(depthRange - (depthOffset + 1), 0, 29)).image.getPixel(qd) <> color(255, 255, 255) then
+              points.add([qd, depthRange - depthOffset])
+              depthOffset = depthOffset + 1
+            else 
+              depthCheck = false
+            end if
+          end repeat
+        end repeat 
+        
+        
+        --iterate through points list & draw on dat thang
+        repeat with t = 1 to points.count then 
+          
+          --funny hee hoo lerp stuff
+          repeat with i = 0 to 2
+            percent = t / points.count.float
+            if i = 0 then
+              intensityPercent = lerp(1 , 0.1, percent)
+            else if  i = 1 then
+              intensityPercent = lerp(0.8, 0.1, percent)
+            else 
+              intensityPercent = lerp(0.6, 0.1, percent).float
+            end if 
+            
+            widthLerp = point(lerp(mossWidth, 30, percent), lerp(mossWidth, 30, percent))
+            widthLerp = point(sphereDepth(widthLerp.locH, i+1 * 10), sphereDepth(widthLerp.locV, i+1 * 10))
+            if percent < 0.1  and i = 2 then
+              mossSize = 2
+            else if percent > 0.9 then
+              mossSize = 4
+            else 
+              mossSize = restrict(lerp(1, 3, percent) + i, 1, 3)
+            end if
+            mossSize = mossSize.integer * 50
+            mossVar = random(6) * 30
+            spriteRect = rect(mossVar - 30, mossSize - 50, mossVar, mossSize)
+            qd2 = rect(points[t][1].locH - widthLerp.locH, points[t][1].locV - widthLerp.locV, points[t][1].locH + widthLerp.locH, points[t][1].locV + widthLerp.locV)
+            qd2 = rotateToQuad (qd2, random(360))
+            
+            canRender = true
+            if percent > 0.75 and i = 2 then
+              canRender = false
+            end if
+            if percent > 0.9 and i <> 0 then
+              canRender = false
+            end if
+            
+            if canRender then 
+              if prop[1] = "Moss Drop A" then
+                member("layer" & restrict(points[t][2] - i, 0, 29) ).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:color(255,0,255)})
+                copyPixelsToEffectColor("A", restrict(points[t][2] - i, 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityPercent)
+              else if prop[1] = "Moss Drop B" then
+                
+                member("layer" & restrict(points[t][2] - i, 0, 29) ).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:color(0,255,255)})
+                copyPixelsToEffectColor("B", restrict(points[t][2] - i, 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityPercent)
+              else
+                member("layer" & restrict(points[t][2] - i, 0, 29) ).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:color(0,255,0)})
+              end if
+            end if
+          end repeat
+        end repeat
+        
+      "Moss Hang", "Moss Hang A", "Moss Hang B":
+        dist = sqrt(power(A.locV - B.locV, 2) + power(A.locH - B.locH, 2))
+        dist = dist / 20
+        depthOffset = 0
+        mossLength = lerp(60, 120, random(100).float/100)
+        targetSize = dist / 5
+        points = []
+        
+        repeat with t = 1 to dist.integer then
+          --lerps to go from the top of the long to the bottom. 1 is the top
+          percent = (t / dist).float
+          qd = lerpPnt(B, A, percent)
+          
+          mossLength = mossLength + lerp(-dist, dist, random(100).float/100)
+          mossLength = restrict(mossLength, 10, dist * 5)
+          points2 = []
+          depthCheck = true
+          depthRange = restrict(dp, 0, 29)
+          repeat with t2 = 1 to (mossLength).integer / 2 then
+            
+            percent2 = (t2 / (mossLength / 2)).float
+            qd2 = lerp(qd, point(qd.locH, qd.locV + mossLength), percent2)
+            depthCheck = true
+            points2.add([qd2, depthRange - depthOffset])
+            repeat while depthCheck then
+              
+              if restrict(depthRange - depthOffset, 0, 29) = 0 then
+                if member("layer" & restrict(depthRange - (depthOffset), 0, 29)).image.getPixel(qd2) = color(255, 255, 255) then
+                  depthOffset = depthOffset - 3
+                end if
+                depthCheck = false
+              else if member("layer" & restrict(depthRange - (depthOffset + 1), 0, 29)).image.getPixel(qd2) <> color(255, 255, 255) then
+                points2.add([qd2, depthRange - depthOffset])
+                depthOffset = depthOffset + 1
+              else 
+                depthCheck = false
+              end if
+            end repeat
+            
+          end repeat
+          points.add(points2)
+          
+        end repeat
+        --poor mans drawSprites
+        totalT = 1
+        totalPoints = 0
+        totalPoints = points.count
+        totalLine = lerp(0.3, 0.7, random(100).float/100)
+        if prop[1] = "Moss Hang A" then 
+          eftc = "A"
+          colr = color(255, 0, 255)
+        else if prop[1] = "Moss Hang B" then 
+          eftc = "B"
+          colr = color(0, 255, 255)
+        else
+          eftc = 0
+          colr = color(0, 255, 0)
+        end if
+        
+        repeat with t = 1 to points.count then
+          repeat with t2 = 1 to points[t].count then
+            if t2 mod 2 = 0 then
+              percent = t2.float / points[t].count.float
+              totalPercent = totalT / totalPoints.float
+              if totalPercent < totalLine then
+                yurp = totalPercent / totalLine
+                totalLerp = lerp(0, 1, yurp)
+              else
+                totalLerp = lerp(1, 0, (totalPercent - totalLine) / totalLine)
+              end if
+              intensityLerp1 = lerp(restrict(totalLerp , 0,1), 0.2, percent)
+              mossSize = lerp(1, 2, totalLerp)
+              mossSize = mossSize.integer * 50
+              mossVar = random(6) * 30
+              spriteRect = rect(mossVar - 30, mossSize - 50, mossVar, mossSize)
+              widthLerp = 15
+              qdOffset = lerp(-30, 30, random(100).float/100)
+              qd2 = rect(points[t][t2][1].locH - 15, points[t][t2][1].locV - 30, points[t][t2][1].locH + 15, points[t][t2][1].locV + 30)
+              qd2 = rotateToQuad(qd2, random(360))
+              member("layer"& restrict(points[t][t2][2] , 0, 29)).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:colr})
+              if eftc <> 0 then
+                copyPixelsToEffectColor(eftc, restrict(points[t][t2][2], 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityLerp1)
+              end if
+              
+              if percent < 0.75 then
+                mossSize = lerp(2, 3, totalLerp)
+                mossSize = mossSize.integer * 50
+                mossVar = random(6) * 30
+                spriteRect = rect(mossVar - 30, mossSize - 50, mossVar, mossSize)
+                
+                member("layer"& restrict(points[t][t2][2] - 1 , 0, 29)).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:colr})
+                if eftc <> 0 then
+                  copyPixelsToEffectColor(eftc, restrict(points[t][t2][2] - 1, 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityLerp1)
+                end if
+              end if
+              
+              if percent < 0.6 then
+                mossSize = lerp(2, 4, totalLerp)
+                mossSize = mossSize.integer * 50
+                mossVar = random(6) * 30
+                spriteRect = rect(mossVar - 30, mossSize - 50, mossVar, mossSize)
+                
+                member("layer"& restrict(points[t][t2][2] - 2 , 0, 29)).image.copyPixels(member("MossDropGraf").image, qd2 + rect(qdOffset, 0, qdOffset, 0), spriteRect, {#ink:36, #color:colr})
+                if eftc <> 0 then
+                  copyPixelsToEffectColor(eftc, restrict(points[t][t2][2] - 2, 0, 29), qd2 + rect(qdOffset, 0, qdOffset, 0), "MossDropGrad", spriteRect, 0.5, intensityLerp1)
+                end if
+                
+              end if
+              
+              
+            end if
+          end repeat
+          totalT = totalT+1
+        end repeat
     end case
   end if
 end

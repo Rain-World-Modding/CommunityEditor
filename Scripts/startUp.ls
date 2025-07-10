@@ -194,7 +194,7 @@ on exitFrame me
   tilesInCat.add([#nm:"Chaotic Greeble", #sz:point(1,1), #specs:[0], #renderType:"tiles", #color:color(100,100,100)])
   
   savLM = member("matInit")
-  member("matInit").importFileInto("Materials\Init.txt")
+  member("matInit").importFileInto("Materials/Init.txt")
   savLM.name = "matInit"
   DRCustomMatList = []
   if (savLM.text <> VOID) and (savLM.text <> "") then
@@ -221,7 +221,7 @@ on exitFrame me
               if (matTl[#renderType] = "customAutofit") then
                 afMat = member("initImport")
                 afMat.text = ""
-                member("initImport").importFileInto("Materials\" & matTl.nm & ".txt")
+                member("initImport").importFileInto("Materials/" & matTl.nm & ".txt")
                 afMat.name = "initImport"
                 
                 -- Make sure parts are correct
@@ -281,7 +281,7 @@ on exitFrame me
   
   sav = member("initImport")
   sav.text = ""
-  member("initImport").importFileInto("Graphics\Init.txt")
+  member("initImport").importFileInto("Graphics/Init.txt")
   sav.text = sav.text&RETURN&RETURN&member("Drought Needed Init").text
   sav.name = "initImport"
   
@@ -327,7 +327,7 @@ on exitFrame me
   global gPEcolors
   gPEcolors = []
   sav = member("initImport")
-  member("initImport").importFileInto("Props\propColors.txt")
+  member("initImport").importFileInto("Props/propColors.txt")
   sav.name = "initImport"
   repeat with q = 1 to the number of lines in sav.text then
     if sav.text.line[q] <> "" then
@@ -336,7 +336,7 @@ on exitFrame me
   end repeat
   
   sav = member("initImport")
-  member("initImport").importFileInto("Props\Init.txt")
+  member("initImport").importFileInto("Props/Init.txt")
   sav.name = "initImport"
   
   repeat with q = 1 to 1000 ---- PJB fix 2000 --> 1000
@@ -831,7 +831,7 @@ on exitFrame me
   -- Custom effects
   sav = member("initImport")
   sav.text = ""
-  member("initImport").importFileInto("Effects\Init.txt")
+  member("initImport").importFileInto("Effects/Init.txt")
   sav.name = "initImport"
   
   didNewHeading = 0
@@ -890,7 +890,7 @@ on exitFrame me
   gCustomLights = []
   if not checkIsDrizzleRendering() then
     
-    pth = the moviePath & "Lights\"
+    pth = the moviePath & "Lights/"
     i = 1
     repeat while true then
       n = getNthFileNameInFolder(pth, i)

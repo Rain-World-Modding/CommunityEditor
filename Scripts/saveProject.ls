@@ -36,9 +36,9 @@ on exitFrame me
     put RETURN after str
     
     objFileio = new xtra("fileio")
-    pth = the moviePath & "LevelEditorProjects\"
+    pth = the moviePath & "LevelEditorProjects/"
     repeat with f in gLOADPATH then
-      pth = pth & f & "\"
+      pth = pth & f & "/"
     end repeat
     createFile (objFileio, pth&levelName&".txt")
     objFileio.openFile(pth&levelName&".txt", 0)
@@ -49,7 +49,7 @@ on exitFrame me
     --  member("lightImageExport").image.copyPixels(member("lightImage").image, rect(0, 0, 1040+200, 800+200), rect(0, 0, 1040+200, 800+200))
     member("lightImage").image.setPixel(0,0,color(0,0,0))
     member("lightImage").image.setPixel(member("lightImage").rect.width-1, member("lightImage").rect.height-1, color(0,0,0))
-    -- exportAnImage( member("lightImageExport").image, "\LevelEditorProjects\" & levelName)
+    -- exportAnImage( member("lightImageExport").image, "/LevelEditorProjects/" & levelName)
     
     gImgXtra = xtra("ImgXtra").new()
     nwImg = image(member("lightImage").image.rect.width, member("lightImage").image.rect.height, 32)

@@ -25,7 +25,7 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
   if (cEff <> VOID) then
     effGraf = member("previewImprt")
     if (gLastImported <> cEff.nm) then
-      member("previewImprt").importFileInto("Effects\" & cEff.nm & ".png")
+      member("previewImprt").importFileInto("Effects/" & cEff.nm & ".png")
       effGraf.name = "previewImprt"
       gLastImported = cEff.nm
     end if
@@ -182,7 +182,7 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
             doingTip = 1
             effGraf = member("previewImprt")
             if gLastImported <> cEff.tipGraf then
-              member("previewImprt").importFileInto("Effects\" & cEff.tipGraf & ".png")
+              member("previewImprt").importFileInto("Effects/" & cEff.tipGraf & ".png")
               effGraf.name = "previewImprt"
               gLastImported = cEff.tipGraf
             end if
@@ -329,7 +329,7 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
               doingTip = 0
               effGraf = member("previewImprt")
               if gLastImported <> cEff.nm then
-                member("previewImprt").importFileInto("Effects\" & cEff.nm & ".png")
+                member("previewImprt").importFileInto("Effects/" & cEff.nm & ".png")
                 effGraf.name = "previewImprt"
                 gLastImported = cEff.nm
               end if

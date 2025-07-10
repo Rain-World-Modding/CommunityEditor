@@ -9,9 +9,9 @@ on exitFrame me
     _player.quit()
   end if
   
-  pth = the moviePath & "\LevelEditorProjects"
+  pth = the moviePath & "/LevelEditorProjects"
   repeat with f in gLOADPATH then
-    pth = pth & "\" & f
+    pth = pth & "/" & f
   end repeat
   
   projects = []

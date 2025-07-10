@@ -129,13 +129,13 @@ on renderProp(prop, dp, qd, mdPoint, data)
   if (gLastImported <> prop.nm) then
     tileAsProp = (prop.tags.getPos("Tile") > 0)
     if (tileAsProp) then
-      member("previewImprt").importFileInto("Graphics\" & prop.nm & ".png")
+      member("previewImprt").importFileInto("Graphics/" & prop.nm & ".png")
     else if (prop.tp = "customRope") then
-      member("previewImprt").importFileInto("Props\" & prop.nm & "Segment.png")
+      member("previewImprt").importFileInto("Props/" & prop.nm & "Segment.png")
     else if (prop.tp = "customLong") then
-      member("previewImprt").importFileInto("Props\" & prop.nm & "Segment.png")
+      member("previewImprt").importFileInto("Props/" & prop.nm & "Segment.png")
     else
-      member("previewImprt").importFileInto("Props\" & prop.nm & ".png")
+      member("previewImprt").importFileInto("Props/" & prop.nm & ".png")
     end if
     sav2.name = "previewImprt"
     gLastImported = prop.nm

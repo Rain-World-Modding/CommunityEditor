@@ -1,7 +1,0 @@
-[ Natural ]
-- Slime - 
-Melt 
-Rust 
-Barnacles 
-Rubble 
-DecalsOnlySlime 

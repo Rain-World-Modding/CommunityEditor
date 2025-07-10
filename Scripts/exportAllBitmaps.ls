@@ -1,12 +1,12 @@
  on saveImages savePath
   retVal = 1
   -- check savePath
-  if (not stringP(savePath)) and (not savePath contains "\") then
+  if (not stringP(savePath)) and (not savePath contains "/") then
     retVal = -1
     return retVal
   else
-    if the last char of savePath <> "\" then 
-      savePath = savePath & "\"
+    if the last char of savePath <> "/" then 
+      savePath = savePath & "/"
     end if
   end if
   

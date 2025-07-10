@@ -166,7 +166,7 @@ on exitFrame me
       gLightEProps.paintShape = l[curr]
     else
       lightMem = member("previewImprt")
-      member("previewImprt").importFileInto("Lights\" & gCustomLights[curr - l.count])
+      member("previewImprt").importFileInto("Lights/" & gCustomLights[curr - l.count])
       lightMem.name = "previewImprt"
       lmiw = lightMem.image.width-1
       lmih = lightMem.image.height-1

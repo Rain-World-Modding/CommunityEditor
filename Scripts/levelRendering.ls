@@ -880,7 +880,7 @@ on drawATileTile(q, c, l, tl, frntImg, dt)
   
   sav2 = member("previewImprt")
   if gLastImported <> tl.nm then
-    member("previewImprt").importFileInto("Graphics\" &tl.nm&".png")
+    member("previewImprt").importFileInto("Graphics/" &tl.nm&".png")
     sav2.name = "previewImprt"
     gLastImported = tl.nm
   end if

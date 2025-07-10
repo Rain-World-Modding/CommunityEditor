@@ -33,9 +33,29 @@ on prepareRelease(shouldHalt)
   member("effectOptions").text = "[ Layers ]: All"&RETURN&"All     1     - 2 -   3     1:st and 2:nd     2:nd and 3:rd     "
   member("level Name").text = "New Project"
   member("ProjectsL").text = ""
+  member("tileMenu").text = ""
+  member("propMenu").text = ""
+  member("Prop Depth Text").text = ""
+  member("rulerText").text = ""
   member("previewTiles").image = image(1, 1, 1)
   member("previewTilesDR").image = image(1, 1, 1)
   member("previewImprt").image = image(1, 1, 1)
+  member("activeLightImage").image = image(1, 1, 1)
+  member("levelEditImageShortCuts").image = image(52*5, 40*5, 1)
+  member("propsImage").image = image(52*16, 40*16, 16)
+  member("TEimg1").image = image(52*16, 40*16, 16)
+  member("TEimg2").image = image(52*16, 40*16, 16)
+  member("TEimg3").image = image(52*16, 40*16, 16)
+  member("tilePreview").image = image(1, 1, 1)
+  member("dpImage").image = image(1, 1, 1)
+  member("finalImage").image = image(1, 1, 1)
+  member("fogImage").image = image(1, 1, 1)
+  member("shadowImage").image = image(1, 1, 1)
+  member("horiImg").image = image(1, 1, 1)
+  member("vertImg").image = image(1, 1, 1)
+  member("flattenedGradientA").image = image(1, 1, 1)
+  member("flattenedGradientB").image = image(1, 1, 1)
+  member("previewTiles").image = image(1, 1, 1)
   
   repeat with q = 1 to 1000
     (member q of castLib 2).erase() -- customMems
@@ -122,7 +142,7 @@ on exportAll()
   --type objImg: dynamic
   --type return: void
   prepareRelease(FALSE)
-  pth = the moviePath & "Export\"
+  pth = the moviePath & "Export/"
   objFileio = new xtra("fileio")
   objImg = new xtra("ImgXtra")
   i = 1
@@ -295,17 +315,38 @@ end
 
 on initDRInternal()
   --type return: void
-  DRInternalList = ["SGFL", "tileSetAsphaltFloor", "tileSetStandardFloor", "tileSetBigMetalFloor", "tileSetBricksFloor", "tileSetCliffFloor", "tileSetConcreteFloor", "tileSetNon-Slip MetalFloor", "tileSetRainstoneFloor", "tileSetRough RockFloor", "tileSetScaffoldingDRFloor", "tileSetSteelFloor", "tileSetSuperStructure2Floor", "tileSetSuperStructureFloor", "tileSetTiny SignsFloor", "tileSetElectricMetalFloor", "tileSetCageGrateFloor", "tileSetGrateFloor", "tileSetBulkMetalFloor", "tileSetMassiveBulkMetalFloor", "4Mosaic Square", "4Mosaic Slope NE", "4Mosaic Slope SE", "4Mosaic Slope NW", "4Mosaic Slope SW", "4Mosaic Floor", "3DBrick Square", "3DBrick Slope NE", "3DBrick Slope SE", "3DBrick Slope NW", "3DBrick Slope SW", "3DBrick Floor", "Small Stone Slope NE", "Small Stone Slope SE", "Small Stone Slope NW", "Small Stone Slope SW", "Small Stone Floor", "Small Machine Slope NE", "Small Machine Slope SE", "Small Machine Slope NW", "Small Machine Slope SW", "Small Machine Floor", "Missing Metal Slope NE", "Missing Metal Slope SE", "Missing Metal Slope NW", "Missing Metal Slope SW", "Missing Metal Floor", "Small Stone Marked", "Square Stone Marked", "Small Metal Alt", "Small Metal Marked", "Small Metal X", "Metal Floor Alt", "Metal Wall", "Metal Wall Alt", "Square Metal Marked", "Square Metal X", "Wide Metal", "Tall Metal", "Big Metal X", "Large Big Metal", "Large Big Metal Marked", "Large Big Metal X", "AltGrateA", "AltGrateB1", "AltGrateB2", "AltGrateB3", "AltGrateB4", "AltGrateC1", "AltGrateC2", "AltGrateE1", "AltGrateE2", "AltGrateF1", "AltGrateF2", "AltGrateF3", "AltGrateF4", "AltGrateG1", "AltGrateG2", "AltGrateH", "AltGrateI", "AltGrateF2", "AltGrateJ1", "AltGrateJ2", "AltGrateJ3", "AltGrateJ4", "AltGrateK1", "AltGrateK2", "AltGrateK3", "AltGrateK4", "AltGrateL", "AltGrateM", "AltGrateN", "AltGrateO", "Big Big Pipe", "Ring Chain", "Stretched Pipe", "Stretched Wire", "Twisted Thread", "Christmas Wire", "Ornate Wire", "Dune Sand", "Big Chain", "Chunky Chain", "Big Bike Chain", "Huge Bike Chain", "Long Barbed Wire", "Small Chain", "Fat Chain", "Moss Drop", "Moss Drop A", "Moss Drop B", "Moss Hang", "Moss Hang A", "Moss Hang B"]
+  DRInternalList = ["SGFL", "tileSetAsphaltFloor", "tileSetStandardFloor", "tileSetBigMetalFloor", "tileSetBricksFloor", "tileSetCliffFloor", "tileSetConcreteFloor",\
+  "tileSetNon-Slip MetalFloor", "tileSetRainstoneFloor", "tileSetRough RockFloor", "tileSetScaffoldingDRFloor", "tileSetSteelFloor", "tileSetSuperStructure2Floor",\
+  "tileSetSuperStructureFloor", "tileSetTiny SignsFloor", "tileSetElectricMetalFloor", "tileSetCageGrateFloor", "tileSetGrateFloor", "tileSetBulkMetalFloor",\
+  "tileSetMassiveBulkMetalFloor", "4Mosaic Square", "4Mosaic Slope NE", "4Mosaic Slope SE", "4Mosaic Slope NW", "4Mosaic Slope SW", "4Mosaic Floor", "3DBrick Square",\
+  "3DBrick Slope NE", "3DBrick Slope SE", "3DBrick Slope NW", "3DBrick Slope SW", "3DBrick Floor", "Small Stone Slope NE", "Small Stone Slope SE", "Small Stone Slope NW",\
+  "Small Stone Slope SW", "Small Stone Floor", "Small Machine Slope NE", "Small Machine Slope SE", "Small Machine Slope NW", "Small Machine Slope SW", "Small Machine Floor",\
+  "Missing Metal Slope NE", "Missing Metal Slope SE", "Missing Metal Slope NW", "Missing Metal Slope SW", "Missing Metal Floor", "Small Stone Marked", "Square Stone Marked",\
+  "Small Metal Alt", "Small Metal Marked", "Small Metal X", "Metal Floor Alt", "Metal Wall", "Metal Wall Alt", "Square Metal Marked", "Square Metal X", "Wide Metal",\
+  "Tall Metal", "Big Metal X", "Large Big Metal", "Large Big Metal Marked", "Large Big Metal X", "AltGrateA", "AltGrateB1", "AltGrateB2", "AltGrateB3", "AltGrateB4",\
+  "AltGrateC1", "AltGrateC2", "AltGrateE1", "AltGrateE2", "AltGrateF1", "AltGrateF2", "AltGrateF3", "AltGrateF4", "AltGrateG1", "AltGrateG2", "AltGrateH", "AltGrateI",\
+  "AltGrateF2", "AltGrateJ1", "AltGrateJ2", "AltGrateJ3", "AltGrateJ4", "AltGrateK1", "AltGrateK2", "AltGrateK3", "AltGrateK4", "AltGrateL", "AltGrateM", "AltGrateN",\
+  "AltGrateO", "Big Big Pipe", "Ring Chain", "Stretched Pipe", "Stretched Wire", "Twisted Thread", "Christmas Wire", "Ornate Wire", "Dune Sand", "Big Chain", "Chunky Chain",\
+  "Big Bike Chain", "Huge Bike Chain", "Long Barbed Wire", "Small Chain", "Fat Chain", "Moss Drop", "Moss Drop A", "Moss Drop B", "Moss Hang", "Moss Hang A", "Moss Hang B"]
   RandomMetals_grabTiles = ["Metal", "Metal construction", "Plate"]
   RandomMetals_allowed = ["Small Metal", "Metal Floor", "Square Metal", "Big Metal", "Big Metal Marked", "C Beam Horizontal AA", "C Beam Horizontal AB", "C Beam Vertical AA", "C Beam Vertical BA", "Plate 2"]
   ChaoticStone2_needed = ["Small Stone", "Square Stone", "Tall Stone", "Wide Stone", "Big Stone", "Big Stone Marked"]
   DRRandomMetal_needed = ["Small Metal", "Metal Floor", "Square Metal", "Big Metal", "Big Metal Marked", "Four Holes", "Cross Beam Intersection"]
   SmallMachines_grabTiles = ["Machinery", "Machinery2", "Small machine"]
-  SmallMachines_forbidden = ["Feather Box - W", "Feather Box - E", "Piston Arm", "Vertical Conveyor Belt A", "Ventilation Box Empty", "Ventilation Box", "Big Fan", "Giant Screw", "Compressor Segment", "Compressor R", "Compressor L", "Hub Machine", "Pole Holder", "Sky Box", "Conveyor Belt Wheel", "Piston Top", "Piston Segment Empty", "Piston Head", "Piston Segment Filled", "Piston Bottom", "Piston Segment Horizontal A", "Piston Segment Horizontal B", "machine box C_E", "machine box C_W", "machine box C_Sym", "Machine Box D", "machine box B", "Big Drill", "Elevator Track", "Conveyor Belt Covered", "Conveyor Belt L", "Conveyor Belt R", "Conveyor Belt Segment", "Dyson Fan", "Metal Holes", "valve", "Tank Holder", "Drill Rim", "Door Holder R", "Door Holder L", "Drill B", "machine box A", "Machine Box E L", "Machine Box E R", "Drill Shell A", "Drill Shell B", "Drill Shell Top", "Drill Shell Bottom", "Pipe Box R", "Pipe Box L"]
+  SmallMachines_forbidden = ["Feather Box - W", "Feather Box - E", "Piston Arm", "Vertical Conveyor Belt A", "Ventilation Box Empty", "Ventilation Box", "Big Fan",\
+  "Giant Screw", "Compressor Segment", "Compressor R", "Compressor L", "Hub Machine", "Pole Holder", "Sky Box", "Conveyor Belt Wheel", "Piston Top", "Piston Segment Empty",\
+  "Piston Head", "Piston Segment Filled", "Piston Bottom", "Piston Segment Horizontal A", "Piston Segment Horizontal B", "machine box C_E", "machine box C_W",\
+  "machine box C_Sym", "Machine Box D", "machine box B", "Big Drill", "Elevator Track", "Conveyor Belt Covered", "Conveyor Belt L", "Conveyor Belt R",\
+  "Conveyor Belt Segment", "Dyson Fan", "Metal Holes", "valve", "Tank Holder", "Drill Rim", "Door Holder R", "Door Holder L", "Drill B", "machine box A", "Machine Box E L",\
+  "Machine Box E R", "Drill Shell A", "Drill Shell B", "Drill Shell Top", "Drill Shell Bottom", "Pipe Box R", "Pipe Box L"]
   RandomMachines_grabTiles = ["Machinery", "Machinery2", "Small machine", "LB Machinery", "Custom Random Machines"]
   RandomMachines_forbidden = ["Feather Box - W", "Feather Box - E", "Piston Arm", "Vertical Conveyor Belt A", "Piston Head No Cage", "Conveyor Belt Holder Only", "Conveyor Belt Wheel Only", "Drill Valve"]
   RandomMachines2_grabTiles = ["Machinery", "Machinery2", "Small machine"]
-  RandomMachines2_forbidden = ["Feather Box - W", "Feather Box - E", "Piston Arm", "Vertical Conveyor Belt A", "Ventilation Box Empty", "Ventilation Box", "Big Fan", "Giant Screw", "Compressor Segment", "Compressor R", "Compressor L", "Hub Machine", "Pole Holder", "Sky Box", "Conveyor Belt Wheel", "Piston Top", "Piston Segment Empty", "Piston Head", "Piston Segment Filled", "Piston Bottom", "Piston Segment Horizontal A", "Piston Segment Horizontal B", "machine box C_E", "machine box C_W", "machine box C_Sym", "Machine Box D", "machine box B", "Big Drill", "Elevator Track", "Conveyor Belt Covered", "Conveyor Belt L", "Conveyor Belt R", "Conveyor Belt Segment", "Dyson Fan"]
+  RandomMachines2_forbidden = ["Feather Box - W", "Feather Box - E", "Piston Arm", "Vertical Conveyor Belt A", "Ventilation Box Empty", "Ventilation Box", "Big Fan",\
+  "Giant Screw", "Compressor Segment", "Compressor R", "Compressor L", "Hub Machine", "Pole Holder", "Sky Box", "Conveyor Belt Wheel", "Piston Top", "Piston Segment Empty",\
+  "Piston Head", "Piston Segment Filled", "Piston Bottom", "Piston Segment Horizontal A", "Piston Segment Horizontal B", "machine box C_E", "machine box C_W",\
+  "machine box C_Sym", "Machine Box D", "machine box B", "Big Drill", "Elevator Track", "Conveyor Belt Covered", "Conveyor Belt L", "Conveyor Belt R", "Conveyor Belt Segment",\
+  "Dyson Fan"]
   DRBevelColors = [[color(255, 0, 0), point(-1, -1)], [color(255, 0, 0), point(0, -1)], [color(255, 0, 0), point(-1, 0)], [color(0, 0, 255), point(1, 1)], [color(0, 0, 255), point(0, 1)], [color(0, 0, 255), point(1, 0)]]
 end
 
@@ -333,7 +374,7 @@ on tryAddToPreview(ad)
   
   -- Import tile preview
   sav2 = member("previewImprt")
-  member("previewImprt").importFileInto("Graphics\" & ad.nm & ".png")
+  member("previewImprt").importFileInto("Graphics/" & ad.nm & ".png")
   sav2.name = "previewImprt"
   --INTERNAL
   if (checkDRInternal(ad.nm)) then

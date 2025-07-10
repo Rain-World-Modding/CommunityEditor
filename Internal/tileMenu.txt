@@ -1,8 +1,7 @@
-[ Erosion ]
-- Roughen - 
-SlimeX3 
-Super Melt 
-Destructive Melt 
-Erode 
-Super Erode 
-DaddyCorruption 
+[ Natural ]
+- Slime - 
+Melt 
+Rust 
+Barnacles 
+Rubble 
+DecalsOnlySlime 

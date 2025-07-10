@@ -395,6 +395,13 @@ on effectOnTile me, q, c, q2, c2, effectr
         script("AprilEffects").applyWireBunch(q,c,0)
       "Box Grubs":
         script("AprilEffects").applyJoarFW(q,c,0)
+      "Orblings":
+        if (random(100)<effectr.mtrx[q2][c2]) and random(3) = 1 then
+          script("AprilEffects").applyOrblings(q, c)
+        end if
+      "Mama Orblings":
+        script("AprilEffects").applyMamaOrblings(q, c)
+        
         
       otherwise:
         -- Custom effects system

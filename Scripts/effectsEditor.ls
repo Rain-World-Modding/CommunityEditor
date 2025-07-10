@@ -524,15 +524,15 @@ on newEffect me
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
       ef.options.add(["Effect Color", ["EffectColor1", "EffectColor2", "None"], "None"])
       
-    "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Sprawlroots", "Fungus Roots":
+    "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Sprawlroots", "Fungus Roots", "Mama Orblings":
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
       
-    "Root Grass", "Growers", "Cacti", "Rain Moss", "Dense Mold", "Seed Pods", "Dandelions", "Grass", "Arm Growers", "Horse Tails", "Circuit Plants", "Storm Plants", "Feather Plants", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Club Moss", "Moss Wall", "Mixed Facing Kelp", "Bubble Grower", "Seed Grass", "Hyacinths", "Orb Plants", "Lollipop Mold", "Og Grass":
+    "Root Grass", "Growers", "Cacti", "Rain Moss", "Dense Mold", "Seed Pods", "Dandelions", "Grass", "Arm Growers", "Horse Tails", "Circuit Plants", "Storm Plants", "Feather Plants", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Club Moss", "Moss Wall", "Mixed Facing Kelp", "Bubble Grower", "Seed Grass", "Hyacinths", "Orb Plants", "Lollipop Mold", "Og Grass", "Orblings":
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
       
-      if(["Arm Growers", "Growers", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Mixed Facing Kelp", "Bubble Grower", "Coral Growers", "Leaf Growers", "Meat Growers"].getPos( ef.nm ) > 0 )then
+      if(["Arm Growers", "Growers", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Mixed Facing Kelp", "Bubble Grower", "Coral Growers", "Leaf Growers", "Meat Growers", "Orblings"].getPos( ef.nm ) > 0 )then
         ef.crossScreen = 1
         ef.options.add(["Require In-Bounds", ["Yes", "No"], ["No", "Yes"][getBoolConfig("Sky roots fix") + 1]])
       end if
@@ -733,9 +733,9 @@ on useBrush me, pnt, fac
       end repeat
     end if
     strength = 10 + (90* checkCustomKeybind(#EffectBrushPowerful, "T"))
-    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp"].getPos(efName)>0 then
+    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Foliage", "Mistletoe", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp","Mama Orblings"].getPos(efName)>0 then
       strength = 10000
-      if (efName <> "BlackGoo") and (efName <> "Super BlackGoo") then
+      if (efName <> "BlackGoo") and (efName <> "Super BlackGoo") and (efName <> "Foliage" or fac > 0) and (efName <> "Mistletoe" or fac > 0) then
         gEEprops.brushSize = 1
       end if
     else if efName = "Box Grubs" then

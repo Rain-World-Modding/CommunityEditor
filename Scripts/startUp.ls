@@ -816,10 +816,14 @@ on exitFrame me
     
     -- THE FOLLOWING EFFECTS ARE NOT FOR PUBLIC USE. DO NOT USE WITHOUT PERMISSION.
     if getBoolConfig("HB special") then
-      gEffects[gEffects.count].efs.add([#nm:"Wire Bunches"]) -- contact @aprilistheworstmonthever before use
+      -- contact @aprilistheworstmonthever before use:
+      gEffects[gEffects.count].efs.add([#nm:"Wire Bunches"])
+      gEffects[gEffects.count].efs.add([#nm:"Orblings"])
+      gEffects[gEffects.count].efs.add([#nm:"Mama Orblings"])
     end if
     if getBoolConfig("Hog special") then
-      gEffects[gEffects.count].efs.add([#nm:"Box Grubs"]) -- contact @slithersss before use
+      -- contact @slithersss before use:
+      gEffects[gEffects.count].efs.add([#nm:"Box Grubs"])
     end if
     
   end if

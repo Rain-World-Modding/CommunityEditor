@@ -709,6 +709,285 @@ on ApplyJoarFW me, q, c, eftc
 end
 
 
+--my little HBlings, inspired by the Odradek from death stranding
+on applyOrblings me, q, c
+  q2 = q + gRenderCameraTilePos.locH
+  c2 = c + gRenderCameraTilePos.locV
+  case lrSup of
+    "All":
+      lsL = [1,2,3]
+    "1":
+      lsL = [1]
+    "2":
+      lsL = [2]
+    "3":
+      lsL = [3]
+    "1:st and 2:nd":
+      lsL = [1,2]
+    "2:nd and 3:rd":
+      lsL = [2,3]
+    otherwise:
+      lsL = [1,2,3]
+  end case
+  lsL = lsL[random(lsL.count)]
+  layer = ((lsL-1)*10) + random(9) - 1
+  if layer = 5 then 
+    layer = layer + 1
+  end if
+  
+  
+  if (gLEprops.matrix[q2][c2][lsL][1]=0)then
+    midPoint = giveMiddleOfTile(point(q, c))
+    midPoint = midPoint + point(lerp(-10, 10, random(100).float/100), lerp(-10, 10, random(100).float/100))
+    repeatFlag = true
+    qd = midPoint
+    points = []
+    points.add(qd)
+    orbAngle = lerp(135, 225, random(100).float/100)
+    repeat while repeatFlag then
+      
+      qd = qd + degToVecFac2(orbAngle, 20, 20)
+      orbAngle = lerp(135, 225, random(100).float/100)
+      points.add(qd)
+      if withinBoundsOfLevel(giveGridPos(qd) + gRenderCameraTilePos) = 0 then
+        if skyRootsFix then
+          exit 
+        end if
+        repeatFlag = false
+      end if
+      
+      if afaMvLvlEdit(giveGridPos(qd) + gRenderCameraTilePos, lsL) = 1 then
+        repeatFlag = false
+      end if
+      
+    end repeat
+    --get total dist for lerp
+    totalDist = 0
+    totalT = 1
+    repeat with t = 2 to points.count
+      totalDist = totalDist + sqrt(power(points[t].locV - points[t-1].locV, 2) + power(points[t].locH - points[t-1].locH, 2))  
+      
+    end repeat
+    randomIntensity = lerp(0.5, 0.7, random(100).float/100)
+    --render points
+    repeat with t = 1 to points.count then
+      --draw head
+      if t = 1 then
+        --stupid easter egg
+        if random(15) = 1 then
+          qd = rect(points[t].locH-5, points[t].locV - 7, points[t].locH + 5, points[t].locV + 7)
+          member("layer"&string(layer)).image.copyPixels(member("orblingGraf").image, qd, member("orblingGraf").image.rect, {#color:colr, #ink:36})
+        else
+          qd = rect(points[t].locH-5, points[t].locV - 5, points[t].locH + 5, points[t].locV + 5)
+          member("layer"&string(layer)).image.copyPixels(member("blob").image, qd, member("blob").image.rect, {#color:colr, #ink:36})
+        end if
+        qd = rect(points[t].locH-10, points[t].locV - 10, points[t].locH + 10, points[t].locV + 10)
+        copyPixelsToEffectColor (gdLayer, layer, qd, "softBrush1", member("softBrush1").image.rect, 0, 1)
+      end if
+      
+      if t > 1 then
+        dist  = sqrt(power(points[t].locV - points[t-1].locV, 2) + power(points[t].locH - points[t-1].locH, 2))
+        
+        
+        repeat with t2 = 1 to dist then
+          lerpPercent = (totalT).float/totalDist
+          qdSize = lerp(1, lerp(2, 4, gEEprops.effects[r].mtrx[q2][c2].float/100), lerpPercent)
+          intensityLerp = lerp(randomIntensity, 0, lerpPercent).float
+          qdSize = restrict( qdSize + lerp(-2, 2, random(100).float/100), 1, 6)
+          qd = lerpPnt(points[t-1], points[t], t2.float/dist)
+          qd = rect(qd.locH-qdSize, qd.locV - qdSize, qd.locH + qdSize, qd.locV + qdSize)
+          member("layer"&string(layer)).image.copyPixels(member("blob").image, qd, member ("blob").image.rect, {#color:colr, #ink:36})
+          copyPixelsToEffectColor (gdLayer, layer, qd, "blob", member("blob").image.rect, 0, intensityLerp)
+          --"joints"
+          if t2 = 1 then
+            qd = lerpPnt(points[t-1], points[t], t2.float/dist)
+            qd = rect(qd.locH-qdSize*1.5, qd.locV - qdSize*1.5, qd.locH + qdSize*1.5, qd.locV + qdSize*1.5)
+            
+            if t=2 then
+              qdSize = restrict(qdSize, 1, 2)
+              qd = lerpPnt(points[t-1], points[t], t2.float/dist)
+              qd = rect(qd.locH-qdSize*2, qd.locV - qdSize*2, qd.locH + qdSize*2, qd.locV + qdSize*2)
+              if random(2) = 1 then
+                member("layer"&string(restrict(layer-1, 0, 29))).image.copyPixels(member("blob").image, qd, member ("blob").image.rect, {#color:colr, #ink:36})
+              end if
+            else 
+              member("layer"&string(restrict(layer-1, 0, 29))).image.copyPixels(member("blob").image, qd, member ("blob").image.rect, {#color:colr, #ink:36})
+              copyPixelsToEffectColor (gdLayer, restrict(layer-1, 0, 29), qd, "blob", member("blob").image.rect, 0.5, lerp(0.3, 0, lerpPercent))
+            end if
+          end if
+          totalT = totalT + 1
+        end repeat
+        
+      end if
+    end repeat
+  end if
+end
+
+on applyMamaOrblings me, q, c
+  q2 = q + gRenderCameraTilePos.locH
+  c2 = c + gRenderCameraTilePos.locV
+  case lrSup of
+    "All":
+      lsL = [1,2,3]
+    "1":
+      lsL = [1]
+    "2":
+      lsL = [2]
+    "3":
+      lsL = [3]
+    "1:st and 2:nd":
+      lsL = [1,2]
+    "2:nd and 3:rd":
+      lsL = [2,3]
+    otherwise:
+      lsL = [1,2,3]
+  end case
+  lsL = lsL[random(lsL.count)]
+  layer = ((lsL-1)*10) + random(9) - 1
+  if layer = 5 then 
+    layer = layer + 2
+  else if layer = 6 then
+    layer = layer + 1
+  end if
+  
+  --determine points
+  if (gLEprops.matrix[q2][c2][lsL][1]=0)then
+    midPoint = giveMiddleOfTile(point(q, c))
+    midPoint = midPoint + point(lerp(-10, 10, random(100).float/100), lerp(-10, 10, random(100).float/100))
+    repeatFlag = true
+    qd = midPoint
+    points = []
+    points.add(qd)
+    orbAngle = lerp(135, 225, random(100).float/100)
+    lerpGradual = 0
+    repeat while repeatFlag then
+      distLerp = lerp(40, 60, lerpGradual)
+      lerpGradual = restrict(lerpGradual + 0.1, 0, 1)
+      qd = qd + degToVecFac2(orbAngle, distLerp, distLerp)
+      orbAngle = lerp(135, 225, random(100).float/100)
+      points.add(qd)
+      if withinBoundsOfLevel(giveGridPos(qd) + gRenderCameraTilePos) = 0 then
+        if skyRootsFix then
+          exit 
+        end if
+        repeatFlag = false
+      end if
+      
+      if afaMvLvlEdit(giveGridPos(qd) + gRenderCameraTilePos, lsL) = 1 then
+        repeatFlag = false
+      end if
+      
+    end repeat
+    --now draw from points
+    totalDist = 0
+    totalT = 0
+    repeat with t = 2 to points.count
+      totalDist = totalDist + sqrt(power(points[t].locV - points[t-1].locV, 2) + power(points[t].locH - points[t-1].locH, 2))  
+      
+    end repeat
+    
+    repeat with i = 1 to points.count then
+      --draw "head"
+      if i = 1 then
+        headCount = lerp(3, 5, random(100).float/100).integer
+        headAngleAmount = 360 / headcount
+        baseAngle = (vectoradLB(dirVecLB(points[i], points[i+1])) * 180) / pi
+        baseAngle = baseAngle + 45
+        rand = random(100).float/100
+        repeat with j = 1 to headCount then
+          
+          headAngle = ((headAngleAmount * j) + baseAngle) mod 360
+          
+          dist = lerp(70, 40, rand).integer
+          qd = points[1] + degToVecFac2(headAngle, dist, dist)
+          --make branches from points[1] to qd
+          repeat with k = 1 to dist/4 then
+            percent = k / (dist/4).float
+            qd2 = lerpPnt(points[1], qd, percent)
+            --easeInOutCubic
+            if percent < 0.5 then
+              thicknessPercent = 4 * percent * percent  * percent 
+            else
+              thicknessPercent = 1 - power(-2 * percent + 2, 3) / 2
+            end if
+            thicknessMax = lerp(8, 5, rand)
+            thicknessMin = lerp(4, 2, rand)
+            thickness = lerp(thicknessMax, thicknessMin, thicknessPercent)
+            thickness = restrict(thickness + lerp(-3, 3, random(100).float/100), 2, 20)
+            thickness2 = sphereDepth(thickness, thickness - (thickness/5))
+            qd3 = rect(qd2.locH - thickness, qd2.locV - thickness, qd2.locH + thickness, qd2.locV + thickness)
+            qd3 = rotateToQuad(qd3, random(360))
+            member("layer"&string(layer)).image.copyPixels(member("blob").image, qd3, member ("blob").image.rect, {#color:colr, #ink:36}) 
+            copyPixelsToEffectColor (gdLayer, restrict(layer, 0, 29), qd3, "blob", member("blob").image.rect, 0, lerp(0, 0.6, percent))
+            
+            if thickness2 > 1 then
+              qd3 = rect(qd2.locH - thickness2, qd2.locV - thickness2, qd2.locH + thickness2, qd2.locV + thickness2)
+              member("layer"&string(restrict(layer - 1, 0, 29))).image.copyPixels(member("blob").image, qd3, member ("blob").image.rect, {#color:colr, #ink:36})
+              qd3 = rect(qd2.locH - thickness, qd2.locV - thickness, qd2.locH + thickness, qd2.locV + thickness)
+              copyPixelsToEffectColor (gdLayer, restrict(layer-1, 0, 29), qd3, "blob", member("blob").image.rect, 0, lerp(0, 0.6, percent) * 0.9)
+            end if
+          end repeat
+          --head ends
+          thickness = lerp(10, 6, rand)
+          qd2 = rect(qd.locH - thickness, qd.locV - thickness, qd.locH + thickness, qd.locV + thickness)
+          qd2 = rotateToQuadFix(qd2, random(360))
+          member("layer"&string(restrict(layer - 2, 0, 29))).image.copyPixels(member("blob").image, qd2, member ("blob").image.rect, {#color:colr, #ink:36})
+          qd2 = rect(qd.locH - 20, qd.locV - 20, qd.locH + 20, qd.locV + 20)
+          qd2 = rotateToQuadFix(qd2, random(360))
+          copyPixelsToEffectColor (gdLayer, restrict(layer - 2, 0, 29), qd2, "softBrush1", member("softBrush1").image.rect, 0, 1)
+        end repeat
+      else
+        --draw stems
+        
+        dist  = sqrt(power(points[i].locV - points[i-1].locV, 2) + power(points[i].locH - points[i-1].locH, 2))
+        thicknessPercent = i.float / points.count
+        --draw between stem
+        repeat with j = 1 to dist then
+          percent = j / dist.float
+          totalPercent = totalT.float / totalDist
+          if totalPercent < 0.2 then
+            yurp = totalPercent / 0.2
+            intensity = lerp(0.001, 0.6, yurp)
+          else
+            intensity = lerp(0.6, 0.001,  (totalPercent - 0.2).float / 0.7)
+          end if
+          
+          --fuck this line and fuck you
+          --scales between each node, but also from the last node to the next one along the thing
+          thickness = lerp(lerp(2, 8, (i-1).float / points.count), lerp( 2, 8, i.float / points.count), 1-percent)
+          thickness = thickness + lerp(-2, 2, random(100).float/100)
+          if percent > 0.95 or percent < 0.05 then
+            thickness = thickness * 1.5  
+          end if
+          thickness2 = sphereDepth(thickness, thickness - thickness/4)
+          qd = lerpPnt(points[i-1], points[i], percent)
+          qd2 = rect(qd.locH-thickness2, qd.locV-thickness2, qd.locH+thickness2, qd.locV+thickness2)
+          qd = rect(qd.locH-thickness, qd.locV-thickness, qd.locH+thickness, qd.locV+thickness)
+          qd = rotateToQuadFix(qd, random(360))
+          member("layer"&string(layer)).image.copyPixels(member("blob").image, qd, member ("blob").image.rect, {#color:colr, #ink:36})
+          
+          member("layer"&string(restrict(layer - 1, 0, 29))).image.copyPixels(member("blob").image, qd2, member ("blob").image.rect, {#color:colr, #ink:36})
+          copyPixelsToEffectColor (gdLayer, restrict(layer, 0, 29), qd, "blob", member("blob").image.rect, 0, intensity)
+          copyPixelsToEffectColor (gdLayer, restrict(layer - 1, 0, 29), qd, "blob", member("blob").image.rect, 0, intensity * 0.9)
+          totalT = totalT + 1
+        end repeat
+        --draw joints
+        thickness = lerp(4, 10, (i-1).float / points.count)
+        thickness = thickness + lerp(-2, 3, random(100).float/100)
+        qd = rect(points[i - 1].locH-thickness, points[i - 1].locV-thickness, points[i - 1].locH + thickness, points[i - 1].locV + thickness)
+        qd = rotateToQuadFix(qd, random(360))
+        member("layer"&string(restrict(layer - 2, 0, 29))).image.copyPixels(member("blob").image, qd, member ("blob").image.rect, {#color:colr, #ink:36})
+        thickness = thickness * 2
+        qd = rect(points[i - 1].locH-thickness, points[i - 1].locV-thickness, points[i - 1].locH + thickness, points[i - 1].locV + thickness)
+        qd = rotateToQuadFix(qd, random(360))
+        copyPixelsToEffectColor (gdLayer, restrict(layer - 2, 0, 29), qd, "softBrush1", member("softBrush1").image.rect, 0, lerp(0.5, 0.3, i.float/points.count))
+      end if
+      
+    end repeat
+  end if
+end
+
+
 
 
 

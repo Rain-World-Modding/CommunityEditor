@@ -20,4 +20,4 @@ Dark Slime fix : TRUE
 Custom keybinds : TRUE
 Sky roots fix : FALSE
 Hide props in effects : FALSE
-Rock types in large trash: TRUE
+Rock types in large trash : TRUE

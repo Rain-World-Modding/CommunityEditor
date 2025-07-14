@@ -237,6 +237,7 @@ on applyHandGrowers me, q, c, eftc
       if random(2) = 1 then 
         depthDir = -1  
       end if
+      depthLerp = 0
       repeat while t<v
         timePercent=t/v
         t=t+1
@@ -352,13 +353,14 @@ on applySpindle me, q, c, eftc
       bezDic = [[point(0,0), point(0, -5), point(10, -10), point(5,-10)] , [point(0, 0), point(5, 0), point(10, 10), point(10, 5)] ,[point(0,0), point(0, 5), point(-10, 10), point(-5, 10)] , [point(0,0), point(-5, 0), point(-10, -10), point(-10, -5)] ,[point(0,0), point(-5, 0), point(-10, 10), point(-10, 5)] ,[point(0, 0), point(0, 5), point(10, 10), point(5, 10)] , [point(0,0), point(5, 0), point(10, -10), point(10, -5)]  ,[point(0,0), point(0, -5), point(-10, -10), point(-5, -10)]]     
       --pnt, lr, bezdir
       points=[]
+      currentPnt = point(0 ,0)
       --start generating points, 50 is temp value
       repeat with branch = 1 to 50
         if bezDir > 10 then
           bezDir = bezDir-10
         end if
         
-        currentPnt = point(0 ,0)
+        --currentPnt = point(0 ,0)
         bezDir = spindleDic[bezDir][random(3)]
         tempPoints=[]
         

@@ -41,7 +41,6 @@ on prepareRelease(shouldHalt)
   member("previewTilesDR").image = image(1, 1, 1)
   member("previewImprt").image = image(1, 1, 1)
   member("activeLightImage").image = image(1, 1, 1)
-  member("levelEditImageShortCuts").image = image(52*5, 40*5, 1)
   member("propsImage").image = image(52*16, 40*16, 16)
   member("TEimg1").image = image(52*16, 40*16, 16)
   member("TEimg2").image = image(52*16, 40*16, 16)
@@ -167,12 +166,12 @@ on exportAll()
         scriptNm = pth & m.name & ".ls"
         if getBoolConfig("Include script category") then scriptNm = pth & c.name & "_" & m.name & ".ls"
         createFile(objFileio, scriptNm)
-        objFileio.openFile(scriptNm, 0)
+        objFileio.openFile(scriptNm, 2)
         objFileio.writeString(m.scriptText)
         objFileio.closeFile()
       else if (m.type = #text) then
         createFile(objFileio, fname & ".txt")
-        objFileio.openFile(fname & ".txt", 0)
+        objFileio.openFile(fname & ".txt", 2)
         objFileio.writeString(m.text)
         objFileio.closeFile()
       end if

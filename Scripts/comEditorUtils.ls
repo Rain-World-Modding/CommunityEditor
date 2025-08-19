@@ -164,7 +164,7 @@ on exportAll()
         objImg.ix_saveImage(["image": m.image, "filename": fname & ".png", "format": "PNG"])
       else if (m.type = #script) then
         scriptNm = pth & m.name & ".ls"
-        if getBoolConfig("Include script category") then scriptNm = pth & c.name & "_" & m.name & ".ls"
+        --if getBoolConfig("Include script category") then scriptNm = pth & c.name & "_" & m.name & ".ls"
         createFile(objFileio, scriptNm)
         objFileio.openFile(scriptNm, 2)
         objFileio.writeString(m.scriptText)

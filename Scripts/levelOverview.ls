@@ -1,4 +1,4 @@
-global gLOprops, gLevel, gLEprops, gLoadedName, levelName, gPrioCam, snapToGrid, preciseSnap, stg, ps, lvlPropOutput, showControls, hideHelpClick
+global gLOprops, gLevel, gLEprops, gLoadedName, levelName, gPrioCam, snapToGrid, preciseSnap, stg, ps, lvlPropOutput, showControls, hideHelpClick, ldEvilCangleLayer
 
 on exitFrame me
   if (showControls) then
@@ -172,6 +172,13 @@ on buttonClicked me, bttn
         lvlPropOutput = TRUE
       else
         lvlPropOutput = FALSE
+      end if
+      
+    "button level layer four":
+      if ldEvilCangleLayer = FALSE then
+        ldEvilCangleLayer = TRUE
+      else
+        ldEvilCangleLayer = FALSE
       end if
       
   end case

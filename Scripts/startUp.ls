@@ -1,8 +1,8 @@
 global gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, gLightEProps, lvlPropOutput, gLEVEL, gLOprops, gLoadedName, gViewRender, gMassRenderL, gCameraProps, gImgXtra, gEnvEditorProps, gPEprops
-global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion
+global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer
 
 on exitFrame me
-  gVersion = "V.0.4.64"
+  gVersion = "V.0.4.65"
   
   hadException = 0
   
@@ -37,6 +37,7 @@ on exitFrame me
   gFullRender = 1
   gViewRender = 1 - getBoolConfig("Fast render")
   DRLastTL = 1
+  ldEvilCangleLayer = FALSE
   gMassRenderL = []
   gLOADPATH = []
   

@@ -1,4 +1,4 @@
-global c, tm, dptsL, gLightEProps, pos, gLevel, gLEProps, gLOprops, keepLooping, fogDptsL,gRenderCameraTilePos, gAnyDecals, solidMtrx, DRActiveLight, DRWhite
+global c, tm, dptsL, gLightEProps, pos, gLevel, gLEProps, gLOprops, keepLooping, fogDptsL,gRenderCameraTilePos, gAnyDecals, solidMtrx, DRActiveLight, DRWhite, ldEvilCangleLayer
 
 on exitFrame(me)
   if (checkMinimize()) then
@@ -38,11 +38,18 @@ on exitFrame(me)
   marginPixels2 = marginPixels * 2
   if (gAnyDecals) then
     repeat with l = 0 to 29
-      me.quadifyMember("layer" & string(l) & "dc", (l - 5) * 1.5)
+      lm5 = (l - 5) * 1.5
+      if (ldEvilCangleLayer) then
+        lm5 = (l + 25) * 1.5
+      end if
+      me.quadifyMember("layer" & string(l) & "dc", lm5)
     end repeat
   end if
   repeat with l = 0 to 29
     lm5 = (l - 5) * 1.5
+    if (ldEvilCangleLayer) then
+      lm5 = (l + 25) * 1.5
+    end if
     strl = string(l)
     me.quadifyMember("layer" & strl, lm5)
     member("layer" & l & "sh").image = image(cols + marginPixels2, rows + marginPixels2, 8)

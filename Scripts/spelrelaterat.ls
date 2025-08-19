@@ -54,6 +54,8 @@ on withinBoundsOfLevel(pos)
 end
 
 on depthPnt(pnt, dpt)
+  global ldEvilCangleLayer
+  if ldEvilCangleLayer then dpt = dpt + 30
   return (pnt - point(700, 800 / 3)) / ((10 + dpt * 0.025) * 0.1) + point(700, 800 / 3)
 end
 

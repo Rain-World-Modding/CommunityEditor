@@ -1,5 +1,4 @@
-
-global gLOprops, preciseSnap, snapToGrid, lvlPropOutput
+global gLOprops, preciseSnap, snapToGrid, lvlPropOutput, ldEvilCangleLayer
 
 on mouseWithin(me)
   sprite(me.spriteNum).color = color(255,0,0)
@@ -68,6 +67,12 @@ on mouseWithin(me)
         member("buttonText").text = "Output the camera(s) as prop image(s) after render: ACTIVATED."
       else if lvlPropOutput = FALSE then
         member("buttonText").text = "Output the camera(s) as prop image(s) after render: DEACTIVATED."
+      end if
+    "button level layer four":
+      if ldEvilCangleLayer = TRUE then
+        member("buttonText").text = "Output the camera(s) as RegionKit level layer four image(s): ACTIVATED."
+      else
+        member("buttonText").text = "Output the camera(s) as RegionKit level layer four image(s): DEACTIVATED."
       end if
   end case
 end mouseWithin

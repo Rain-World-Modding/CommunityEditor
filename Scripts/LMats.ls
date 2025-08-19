@@ -1,4 +1,6 @@
-global gLOprops, gEEprops, gAnyDecals, gTiles, gTEprops, gLEprops, gRenderCameraTilePos, DRLastMatImp, DRLastSlpImp, DRLastFlrImP, DRLastTexImp, DRCustomMatList, DRLastTL, DRLastTrshImp, DRLastPipeImp, DRPxl, DRPxlRect, DRWhite
+global gLOprops, gEEprops, gAnyDecals, gTiles, gTEprops, gLEprops, gRenderCameraTilePos
+global DRLastMatImp, DRLastSlpImp, DRLastFlrImP, DRLastTexImp, DRCustomMatList, DRLastTL, DRLastTrshImp, DRLastPipeImp, DRLastDensePipeImp
+global DRPxl, DRPxlRect, DRWhite
 
 on LCheckIfATileIsSolidAndSameMaterial(tl, lr, matName)
   tl = point(restrict(tl.locH, 1, gLOprops.size.loch), restrict(tl.locV, 1, gLOprops.size.locv))
@@ -38,7 +40,8 @@ on LIsMyTileSetOpenToThisTile(matName, tl, l)
 end
 
 on LRenderTileMaterial(l, nm, frntImg)
-  -- Random machines and chaotic stone-like materials (made by Alduris)
+  -- Random machines and chaotic stone-like materials (made by Alduris with fixes by mothth)
+  -- todo: is it possible to bias for larger tiles?
   if (DRCustomMatList.count >= 1) then
     matTl = DRCustomMatList[DRLastTL]
     if (matTl.nm <> nm) then
@@ -94,6 +97,7 @@ on LRenderTileMaterial(l, nm, frntImg)
       end repeat
       
       tlsOrdered.sort()
+      delL = [:]
       tls = []
       repeat with q = 1 to tlsOrdered.count
         tls.add(tlsOrdered[q][2])
@@ -103,7 +107,7 @@ on LRenderTileMaterial(l, nm, frntImg)
       tileSelection = []
       repeat with tlGrp in gTiles then
         repeat with tl in tlGrp.tls then
-          if (pickCats.findPos(tlGrp.nm) <> VOID and pickIgnore.findPos(tl.nm) = VOID) or (pickTiles.findPos(tl.nm) <> VOID) then
+          if (pickCats.getPos(tlGrp.nm) <> 0 and pickIgnore.getPos(tl.nm) = 0) or (pickTiles.getPos(tl.nm) <> 0) then
             --tileSelection.add(tl)
             -- Only select tiles with some solid bits
             repeat with spec in tl.specs then
@@ -118,68 +122,70 @@ on LRenderTileMaterial(l, nm, frntImg)
       
       -- Draw the material
       if pickTiles.count > 0 then
-        -- this is slightly different than comms code but will fix that later (in comms because comms version has bugs)
-        repeat while tls.count > 0 then
-          tl = tls[random(tls.count)]
-          
-          -- Shuffle tiles
-          randomTiles = []
-          repeat with thisTl in tileSelection then
-            randomTiles.append([random(1000), thisTl])
-          end repeat
-          randomTiles.sort()
-          
-          -- Find a tile to place
-          repeat with t = 1 to randomTiles.count then
-            testTile = randomTiles[t][2]
-            
-            -- Determine legality of placement
-            legalToPlace = true
-            repeat with a = 0 to testTile.sz.locH-1 then
-              repeat with b = 0 to testTile.sz.locV-1 then
-                testPoint = tl + point(a,b)
-                spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
-                
-                if spec <= 0 then next repeat -- ignore air and buffer
-                
-                if (tls.getPos(testPoint) = 0) then -- areas where material is not placed
-                  legalToPlace = false
-                  exit repeat
-                end if
-                
-                geoSpec = afaMvLvlEdit(testPoint, l)
-                if (geoSpec <> spec) then
-                  -- spec does not match on non-solid tile
-                  legalToPlace = false
-                  exit repeat
-                end if
-              end repeat
-              if (not legalToPlace) then exit repeat
+        repeat with tl in tls then
+          the randomSeed = seedForTile(tl, gLOprops.tileSeed + l)
+          if delL.findPos(tl)=void then
+            -- Shuffle tiles
+            randomTiles = []
+            repeat with thisTl in tileSelection then
+              randomTiles.append([random(1000), thisTl])
             end repeat
+            randomTiles.sort()
             
-            if legalToPlace then
-              -- Place tile
-              rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
-              if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
-                frntImg = drawATileTile(rootPos.loch,rootPos.locV,l,testTile, frntImg, []) -- array argument required for chain holders. do not remove it!
-              end if
+            -- Find a tile to place
+            repeat with t = 1 to randomTiles.count then
+              testTile = randomTiles[t][2]
               
-              -- Remove tile ref
+              -- Determine legality of placement
+              legalToPlace = true
               repeat with a = 0 to testTile.sz.locH-1 then
                 repeat with b = 0 to testTile.sz.locV-1 then
                   testPoint = tl + point(a,b)
                   spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
-                  getPt = tls.getPos(testPoint)
-                  if getPt > 0 then
-                    tls.deleteAt(getPt)
+                  
+                  if spec <= 0 then next repeat -- ignore air and buffer
+                  
+                  if (tls.getPos(testPoint) = 0) then -- areas where material is not placed
+                    legalToPlace = false
+                    exit repeat
                   end if
+                  
+                  geoSpec = afaMvLvlEdit(testPoint, l)
+                  if (geoSpec <> spec) then
+                    -- spec does not match on non-solid tile
+                    legalToPlace = false
+                    exit repeat
+                  end if
+                  
+                  if (delL.findPos(testPoint)<>void) then -- tile has been placed here previously
+                    legalToPlace = false
+                    exit repeat
+                  end if
+                  
                 end repeat
+                if (not legalToPlace) then exit repeat
               end repeat
-              exit repeat
-            end if
-          end repeat
-          if tls.getPos(tl) then
-            tls.deleteAt(tls.getPos(tl))
+              
+              if legalToPlace then
+                -- Place tile
+                rootPos = tl + point(((testTile.sz.locH.float/2.0) + 0.4999).integer-1, ((testTile.sz.locV.float/2.0) + 0.4999).integer-1)
+                if(rootPos.inside(rect(gRenderCameraTilePos, gRenderCameraTilePos+point(100, 60))))then
+                  frntImg = drawATileTile(rootPos.loch,rootPos.locV,l,testTile, frntImg, []) -- array argument required for chain holders. do not remove it!
+                end if
+                
+                -- Remove tile ref
+                repeat with a = 0 to testTile.sz.locH-1 then
+                  repeat with b = 0 to testTile.sz.locV-1 then
+                    testPoint = tl + point(a,b)
+                    spec = testTile.specs[(b+1) + (a*testTile.sz.locV)]
+                    if (spec > -1) then
+                      delL[testPoint] = 1
+                    end if
+                  end repeat
+                end repeat
+                exit repeat
+              end if
+            end repeat
           end if
         end repeat
         the randomSeed = savSeed
@@ -695,6 +701,137 @@ on LDrawATileMaterial(q, c, l, nm) -- frntImg)
           end repeat
           the randomSeed = savSeed
         end if
+      end if
+      
+      if (matTl.findPos(#densePipelike) <> VOID) then
+        -- Circuit-like materials (made by LudoCrypt)
+        matDensePipelike = matTl.densePipelike
+        
+        randCount = matDensePipelike.rnd
+        
+        if (matDensePipelike.findPos(#depths) <> VOID) then
+          densepipeDepths = matDensePipelike.depths
+        else
+          densepipeDepths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        end if
+        
+        if (matDensePipelike.findPos(#shallow) <> VOID) then
+          shallowPipes = matDensePipelike.shallow
+        else
+          shallowPipes = 0
+        end if
+        
+        matFile = member("MatDensePipelikeImport")
+        if (DRLastDensePipeImp <> nm) then
+          member("MatDensePipelikeImport").importFileInto("Materials/" & nm & "DensePipes.png")
+          matFile.name = "MatDensePipelikeImport"
+          DRLastDensePipeImp = nm
+        end if
+        matImg = matFile.image
+        
+        effectColorA = (matDensePipelike.tags.getPos("effectColorA") > 0)
+        effectColorB = (matDensePipelike.tags.getPos("effectColorB") > 0)
+        colored = (matDensePipelike.tags.getPos("colored") > 0)
+        if (colored) then
+          gAnyDecals = 1
+        end if
+        savSeed = the randomSeed
+        the randomSeed = seedForTile(qcp, gLOprops.tileSeed + l)
+        
+        pos = giveMiddleOfTile(qcp-gRenderCameraTilePos)
+        pstLr = DPStartLayerOfTile(qcp, l)
+        if (shallowPipes) then
+          pstLr = l * 10 - 10
+        end if
+        
+        if(afaMvLvlEdit(qcp, l) > 1)then
+          a = afaMvLvlEdit(qcp, l)
+          var = 16 
+          case a of
+            2: var = 20
+            3: var = 19
+            4: var = 17
+            5: var = 18
+            6: var = 21
+            9: var = 22
+          end case
+          
+          rand = random(randCount)
+          
+          repeat with d = pstLr to (l * 10)-1 then
+            if (densepipeDepths.getPos(d - ((l-1) * 10)) > 0 or (d < ((l-1)*10) and shallowPipes = 0)) then
+              member("layer" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40), {#ink:36})
+              if (effectColorA) then
+                member("gradientA" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:39})
+              end if
+              if (effectColorB) then
+                member("gradientB" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:39})
+              end if
+              if (colored) then
+                if (effectColorA = FALSE) then
+                  if (effectColorB = FALSE) then
+                    member("layer" & string(d) & "dc").image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:36})
+                  end if 
+                end if
+              end if
+            end if
+          end repeat
+        else
+          lst = ["0000", "1111", "0101", "1010", "0001", "1000", "0100", "0010", "1001", "1100", "0110", "0011", "1011", "1101", "1110", "0111"]
+          
+          lftDp = DPStartLayerOfTile(qcp+point(-1,0), l) 
+          rghtDp = DPStartLayerOfTile(qcp+point(1,0), l)
+          tpDp = DPStartLayerOfTile(qcp+point(0,-1), l)
+          bttmDp = DPStartLayerOfTile(qcp+point(0,1), l)
+          
+          repeat with d = pstLr to (l * 10)-1 then
+            if (densepipeDepths.getPos(d - ((l-1) * 10)) > 0 or (d < ((l-1)*10) and shallowPipes = 0)) then
+              lft =  solidAfaMv(qcp+point(-1,0), l) * DPCircuitConnection(qcp+point(-1,0), d).locH * (lftDp<=d)
+              rght = solidAfaMv(qcp+point(1,0), l) * DPCircuitConnection(qcp, d).locH * (rghtDp<=d) 
+              tp =  solidAfaMv(qcp+point(0,-1), l) * DPCircuitConnection(qcp+point(0,-1), d).locV* (tpDp<=d) 
+              bttm = solidAfaMv(qcp+point(0,1), l) * DPCircuitConnection(qcp, d).locV * (bttmDp<=d) 
+              
+              if (shallowPipes) then
+                lft =  solidAfaMv(qcp+point(-1,0), l) * DPCircuitConnection(qcp+point(-1,0), d).locH
+                rght = solidAfaMv(qcp+point(1,0), l) * DPCircuitConnection(qcp, d).locH
+                tp =  solidAfaMv(qcp+point(0,-1), l) * DPCircuitConnection(qcp+point(0,-1), d).locV 
+                bttm = solidAfaMv(qcp+point(0,1), l) * DPCircuitConnection(qcp, d).locV 
+              end if  
+              
+              if(afaMvLvlEdit(qcp+point(-1,0), l)>1 and ((afaMvLvlEdit(qcp+point(-1,0), l) <> 9)))then
+                lft = 1
+              end if
+              if(afaMvLvlEdit(qcp+point(1,0), l)>1 and ((afaMvLvlEdit(qcp+point(1,0), l) <> 9)))then
+                rght = 1
+              end if
+              if(afaMvLvlEdit(qcp+point(0,-1), l)>1 and ((afaMvLvlEdit(qcp+point(0,-1), l) <> 9)))then
+                tp = 1
+              end if
+              if(afaMvLvlEdit(qcp+point(0,1), l)>1 and ((afaMvLvlEdit(qcp+point(0,1), l) <> 9)))then
+                bttm = 1
+              end if
+              
+              var = lst.getPos((string(lft) & string(tp) & string(rght) & string(bttm)))
+              rand = random(randCount)
+              
+              member("layer" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40), {#ink:36})
+              if (effectColorA) then
+                member("gradientA" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:39})
+              end if
+              if (effectColorB) then
+                member("gradientB" & string(d)).image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:39})
+              end if
+              if (colored) then
+                if (effectColorA = FALSE) then
+                  if (effectColorB = FALSE) then
+                    member("layer" & string(d) & "dc").image.copyPixels(matImg, rect(pos-point(20,20), pos+point(20,20)), rect((var-1)*40,1+(rand-1)*40,var*40,1+rand*40) + rect(840, 0, 840, 0), {#ink:36})
+                  end if 
+                end if
+              end if
+            end if
+          end repeat
+        end if
+        the randomSeed = savSeed
       end if
       
       if (matTl.findPos(#autofit)) then

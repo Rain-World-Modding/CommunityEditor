@@ -1,4 +1,4 @@
-global gLEProps, levelName, gLEVEL, lightRects, gLOprops, gCurrentRenderCamera, gImgXtra, gLoadedName, gCameraProps, gPrioCam
+global gLEProps, levelName, gLEVEL, lightRects, gLOprops, gCurrentRenderCamera, gImgXtra, gLoadedName, gCameraProps, gPrioCam, ldEvilCangleLayer
 
 on exitFrame me
   if checkMinimize() then
@@ -8,8 +8,13 @@ on exitFrame me
   if checkExit() then
     _player.quit()
   end if
-
-  props = ["image": member("finalImage").image, "filename":_movie.path&"Levels/"&gLoadedName & "_" & gCurrentRenderCamera & ".png"]
+  
+  saveEnding = ""
+  if ldEvilCangleLayer then
+    saveEnding = "_llf"
+  end if
+  
+  props = ["image": member("finalImage").image, "filename":_movie.path&"Levels/"&gLoadedName & "_" & gCurrentRenderCamera & saveEnding & ".png"]
   ok = gImgXtra.ix_saveImage(props)
   if (gCurrentRenderCamera < gCameraProps.cameras.count) then
     put "sendback" && gCurrentRenderCamera
@@ -17,7 +22,7 @@ on exitFrame me
   else
     newMakeLevel(gLoadedName)
   end if
-
+  
 end
 
 

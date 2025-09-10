@@ -370,7 +370,7 @@ on applySpindle me, q, c, eftc
           tempPnt = tempPnt+headPos
           
           --(afaMvLvlEdit(giveGridPos(pos)+gRenderCameraTilePos, ((lstLayer/10.0)-0.4999).integer+1-1)=1)
-          if afaMvLvlEdit(giveGridPos(tempPnt)+gRenderCameraTilePos, Lr) = 0 then
+          if afaMvLvlEdit(giveGridPos(tempPnt)+gRenderCameraTilePos, Lr) = 0 and branch > 5 then
             
             tempPoints.add(spindleDic[bezDir][collisionCheck])
           end if

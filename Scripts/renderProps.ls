@@ -1861,10 +1861,10 @@ on renderLongProp(qd, prop, data, dp)
             end if
             
             if canRender then 
-              if prop[1] = "Moss Drop A" then
+              if prop.nm = "Moss Drop A" then
                 member("layer" & restrict(points[t][2] - i, 0, 29) ).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:color(255,0,255)})
                 copyPixelsToEffectColor("A", restrict(points[t][2] - i, 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityPercent)
-              else if prop[1] = "Moss Drop B" then
+              else if prop.nm = "Moss Drop B" then
                 
                 member("layer" & restrict(points[t][2] - i, 0, 29) ).image.copyPixels(member("MossDropGraf").image, qd2, spriteRect, {#ink:36, #color:color(0,255,255)})
                 copyPixelsToEffectColor("B", restrict(points[t][2] - i, 0, 29), qd2, "MossDropGrad", spriteRect, 0.5, intensityPercent)

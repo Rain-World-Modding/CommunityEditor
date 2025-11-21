@@ -524,6 +524,24 @@ on newEffect me
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
       ef.options.add(["Effect Color", ["EffectColor1", "EffectColor2", "None"], "None"])
       
+      
+    "Fez Tree":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
+      ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
+      ef.crossScreen = 1
+      
+    "Meat Blobs":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
+      ef.options.add(["Blob Size", ["Big", "Medium", "Small"], "Big"])
+      ef.options.add(["Should grow on layer behind", ["Yes", "No"], "No"])
+      ef.options.add(["Needs to be attached to walls", ["Yes", "No"], "Yes"])
+      
+    "Brain Growers", "Upside Down Brain Growers":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
+      ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Dead"])
+      ef.crossScreen = 1
+      
+      
     "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Sprawlroots", "Fungus Roots", "Mama Orblings":
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
@@ -733,7 +751,7 @@ on useBrush me, pnt, fac
       end repeat
     end if
     strength = 10 + (90* checkCustomKeybind(#EffectBrushPowerful, "T"))
-    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Foliage", "Mistletoe", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp","Mama Orblings"].getPos(efName)>0 then
+    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Foliage", "Mistletoe", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp","Mama Orblings","Fez Tree"].getPos(efName)>0 then
       strength = 10000
       if (efName <> "BlackGoo") and (efName <> "Super BlackGoo") and (efName <> "Foliage" or fac > 0) and (efName <> "Mistletoe" or fac > 0) then
         gEEprops.brushSize = 1
@@ -910,7 +928,7 @@ on changeOption me
       gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3] = restrict(gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3], 1, 100)
       
       
-    "Color", "Detail Color", "Fatness", "Size", "Layers", "3D", "Ceramic Color", "Effect Color", "Variation", "Color 1", "Color 2", "Affect Gradients and Decals", "Rotate", "Color Intensity", "Fruit Density", "Mushroom Size", "Mushroom Width", "Flowers", "Side", "Finger Thickness", "Finger Length", "Lamp Color", "Require In-Bounds":
+    "Color", "Detail Color", "Fatness", "Size", "Layers", "3D", "Ceramic Color", "Effect Color", "Variation", "Color 1", "Color 2", "Affect Gradients and Decals", "Rotate", "Color Intensity", "Fruit Density", "Mushroom Size", "Mushroom Width", "Flowers", "Side", "Finger Thickness", "Finger Length", "Lamp Color", "Require In-Bounds", "Blob Size", "Should grow on layer behind", "Needs to be attached to walls":
       gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3] = gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][2][gEEprops.emPos.locH]
       
       

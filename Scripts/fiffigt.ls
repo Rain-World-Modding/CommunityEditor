@@ -206,7 +206,9 @@ on lookAtPoint(pos, lookAtpoint)
 end
 
 on degToVec(deg)
-  rad = -2 * PI * ((deg + 90) / 360.0).float
+  deg = deg + 90
+  deg = -deg 
+  rad = ((deg/360.0).float)*PI*2
   return point(-cos(rad), sin(rad))
 end
 
@@ -712,7 +714,7 @@ on SphereDepth(startRadius, depthAmount)
   if depthAmount = 0 then
     return startRadius
   else if depthAmount > startRadius then
-  return 0  
+    return 0  
   else
     return sqrt(power(startRadius, 2) - power(depthAmount, 2))
   end if

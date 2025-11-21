@@ -1,4 +1,6 @@
 global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
+global blobSize, growOnWalls, needsAttach
+
 
 on exitFrame(me)
   if (checkMinimize()) then
@@ -22,32 +24,42 @@ on exitFrame(me)
   end if
 end
 
-on newFrame(me)
+-- Presenting: the mad ramblings of cappin
+
+-- do this once per frame
+on newFrame me
+  -- we move onto the next row
   vertRepeater = vertRepeater + 1
-  efcnt = gEEprops.effects.count
-  if (efcnt = 0) then
+  
+  -- if there are no effects in the level, skip everything and move onto the next render stage.
+  if (gEEprops.effects.count = 0)then
     keepLooping = 0
     exit
-  else if (r = 0) then
-    vertRepeater = 1
-    r = 1
-    me.initEffect()
+  else if (r=0) then -- r = 0 indicates this is the first frame. (0 would be an invalid effect index) if so,
+    vertRepeater = 1 -- move to the first row to begin applying the effects. this is redundant i think but joarcode :P
+    r = 1            -- set r = 1 so we can start rendering the first effect
+    me.initEffect()  -- and initialize the effect.
   end if
+  --  if we've rendered all the rows on this screen, and not moving onto the next screen, or we've reached the end of the screen,
   efcsc = gEEprops.effects[r].crossScreen
-  if ((vertRepeater > 60) and (efcsc = 0)) or ((vertRepeater > gLOprops.size.locV) and (efcsc = 1)) then
-    me.exitEffect()
-    r = r + 1
-    if (r > efcnt) then
+  if ( (vertRepeater > 60) and (efcsc = 0) ) or ( (vertRepeater > gLOprops.size.locV) and (efcsc = 1)) then
+    me.exitEffect() -- then stop rendering this effect,
+    r = r + 1       -- and move onto the next one
+    
+    if r > gEEprops.effects.count then -- if we've rendered all the effects, stop and move onto the next render stage.
       keepLooping = 0
       exit
-    else
-      me.initEffect()
-      vertRepeater = 1
+    else -- otherwise,
+      me.initEffect()  -- initialize the next effect
+      vertRepeater = 1 -- and move back to the first row.
     end if
   end if
+  
   effectr = gEEprops.effects[r]
-  if (effectr.crossScreen = 0) then
-    sprite(59).locV = vertRepeater * 20
+  if (effectr.crossScreen = 0) then -- if we're not moving onto the next screen, (or maybe this just means we're not on the first screen?? no fucking clue. doesn't really matter anway.)
+    sprite(59).locV = vertRepeater*20 -- i think this moves that big line across the screen that shows where the effect is being applied? no clue.
+    
+    -- render all of the tiles within this row.
     repeat with q = 1 to 100
       q2 = q + gRenderCameraTilePos.locH
       c2 = vertRepeater + gRenderCameraTilePos.locV
@@ -61,7 +73,8 @@ on newFrame(me)
         end if
       end if
     end repeat
-  else
+  else -- otherwise...
+    -- uhh just do the same thing i guess??
     repmcam = vertRepeater - gRenderCameraTilePos.locV
     sprite(59).locV = repmcam * 20
     repeat with q2 = 1 to gLOprops.size.locH
@@ -70,11 +83,19 @@ on newFrame(me)
   end if
 end
 
+-- q and c are the positions of the tile in screen-space ( equivalent to (x - cameraPos.x, z - cameraPos.z) )
+-- q2 and c2 are the positions of the tile in global-space ( equivalent to (x, z) )
 on effectOnTile me, q, c, q2, c2, effectr
   if effectr.mtrx[q2][c2] > 0 then
     efname = effectr.nm
+    
+    -- get the seed.
+    -- wtf is the "the" keyword?? huh
+    -- Alduris: idk it's some Lingo thing for getting variables because it wanted code to look like English and then later learned that that fuckign sucks
     savSeed = the randomSeed
     the randomSeed = seedForTile(point(q2, c2), effectSeed)
+    
+    -- switch case for all of the effect names and then applying them.
     case efname of
         -- Standard effects
       "Slime", "Rust", "Barnacles", "Erode", "Melt", "Roughen", "SlimeX3", "Destructive Melt", "Super Melt", "Super Erode", "DecalsOnlySlime", "Ultra Super Erode", "Colored Barnacles", "Sand", "Impacts", "Fat Slime":
@@ -160,6 +181,18 @@ on effectOnTile me, q, c, q2, c2, effectr
         script("JoarEffects").applyCorruptionNoEye(q,c,effectr.mtrx[q2][c2])
       "Slag":-->to support older projects
         script("JoarEffects").applyCorruptionNoEye(q,c,effectr.mtrx[q2][c2])
+        
+        -- Cappin effects
+      "Fez Tree":
+        if gEEprops.effects[r].mtrx[q2][c2] > 0 then
+          script("CappinEffects").applyFezTree(q, c, 0)
+        end if
+      "Brain Growers":
+        script("CappinEffects").applyBrainGrowers(q,c,gEEprops.effects[r].mtrx[q2][c2], false)
+      "Upside Down Brain Growers":
+        script("CappinEffects").applyBrainGrowers(q,c,gEEprops.effects[r].mtrx[q2][c2], true)
+      "Meat Blobs":
+        script("CappinEffects").applyMeatBlobs(q,c,gEEprops.effects[r].mtrx[q2][c2])
         
         -- LB effects
       "LSlime":
@@ -478,6 +511,12 @@ on initEffect me
         if (op[3] = "Yes") then
           skyRootsFix = 1
         end if
+      "Blob Size":
+        blobSize = [3, 2, 1][["Big", "Medium", "Small"].getPos(op[3])]
+      "Should grow on layer behind":
+        growOnWalls = (op[3] = "Yes")
+      "Needs to be attached to walls":
+        needsAttach = (op[3] = "Yes")
     end case
   end repeat
   

@@ -2,7 +2,7 @@ global gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, 
 global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer
 
 on exitFrame me
-  gVersion = "V.0.4.65"
+  gVersion = "v5.0.0"
   
   hadException = 0
   
@@ -477,24 +477,24 @@ on exitFrame me
   propsInCat.add([#nm:"Wire Bunch", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
   propsInCat.add([#nm:"Wire Bunch 2", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
   
-  gProps.add([#nm:"LB Rope Props", #clr:color(0, 255, 0), #prps:[]])
+  gProps.add([#nm:"Community Rope Props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Big Big Pipe", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(50,150,210), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
-  propsInCat.add([#nm:"Ring Chain", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(100,200,0), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
-  propsInCat.add([#nm:"Christmas Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:17, #collisionDepth:0, #segRad:8.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(200,0, 200), #previewEvery:1, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"Ornate Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:17, #collisionDepth:0, #segRad:8.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(0,200, 200), #previewEvery:1, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0])
   
-  gProps.add([#nm:"Alduris Rope Props", #clr:color(0, 255, 0), #prps:[]])
-  propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Small Chain", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:22, #collisionDepth:0, #segRad:3, #grav:0.5, #friction:0.65, #airFric:0.95, #stiff:1, #previewColor:color(255,0,150), #previewEvery:2, #edgeDirection:0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
-  propsInCat.add([#nm:"Fat Chain", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:44, #collisionDepth:0, #segRad:8, #grav:0.5, #friction:0.65, #airFric:0.95, #stiff:1, #previewColor:color(255,0,150), #previewEvery:2, #edgeDirection:0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
+  -- LB
+  propsInCat.add([#nm:"Big Big Pipe", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(50,150,210), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1, #author:"LB"])
+  propsInCat.add([#nm:"Ring Chain", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(100,200,0), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1, #author:"LB"])
+  propsInCat.add([#nm:"Christmas Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:17, #collisionDepth:0, #segRad:8.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(200,0, 200), #previewEvery:1, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0, #author:"LB"])
+  propsInCat.add([#nm:"Ornate Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:17, #collisionDepth:0, #segRad:8.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(0,200, 200), #previewEvery:1, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0, #author:"LB"])
   
-  gProps.add([#nm:"Dakras Rope Props", #clr:color(0, 255, 0), #prps:[]])
-  propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Big Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:56, #collisionDepth:3, #segRad:19, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,40), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
-  propsInCat.add([#nm:"Chunky Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:19, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,40), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
-  propsInCat.add([#nm:"Big Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:76, #collisionDepth:3, #segRad:33, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,150,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:33, #sourcePush:0])
-  propsInCat.add([#nm:"Huge Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:152, #collisionDepth:3, #segRad:66, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,200,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:66, #sourcePush:0])
+  -- Alduris
+  propsInCat.add([#nm:"Small Chain", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:22, #collisionDepth:0, #segRad:3, #grav:0.5, #friction:0.65, #airFric:0.95, #stiff:1, #previewColor:color(255,0,150), #previewEvery:2, #edgeDirection:0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Alduris"])
+  propsInCat.add([#nm:"Fat Chain", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:44, #collisionDepth:0, #segRad:8, #grav:0.5, #friction:0.65, #airFric:0.95, #stiff:1, #previewColor:color(255,0,150), #previewEvery:2, #edgeDirection:0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Alduris"])
+  
+  -- Dakras
+  propsInCat.add([#nm:"Big Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:56, #collisionDepth:3, #segRad:19, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,40), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Dakras"])
+  propsInCat.add([#nm:"Chunky Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:19, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,40), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Dakras"])
+  propsInCat.add([#nm:"Big Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:76, #collisionDepth:3, #segRad:33, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,150,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:33, #sourcePush:0, #author:"Dakras"])
+  propsInCat.add([#nm:"Huge Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:152, #collisionDepth:3, #segRad:66, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,200,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:66, #sourcePush:0, #author:"Dakras"])
   
   gProps.add([#nm:"Long props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
@@ -504,21 +504,25 @@ on exitFrame me
   propsInCat.add([#nm:"Drill", #tp:"long", #depth:10, #tags:[], #notes:[]])
   propsInCat.add([#nm:"Piston", #tp:"long", #depth:4, #tags:[], #notes:[]])
   
-  gProps.add([#nm:"LB Long Props", #clr:color(0, 255, 0), #prps:[]])
+  gProps.add([#nm:"Community Long Props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Stretched Pipe", #tp:"long", #depth:0, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Twisted Thread", #tp:"long", #depth:0, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Stretched Wire", #tp:"long", #depth:0, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Long Barbed Wire", #tp:"long", #depth:0, #tags:[], #notes:[]])
   
-  gProps.add([#nm:"April Longs", #clr:color(0, 255, 0), #prps:[]])
-  propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Moss Drop", #tp:"long", #depth:3, #tags:[], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"]])
-  propsInCat.add([#nm:"Moss Drop A", #tp:"long", #depth:3, #tags:["effectColorA"], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"]])
-  propsInCat.add([#nm:"Moss Drop B", #tp:"long", #depth:3, #tags:["effectColorB"], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"]])
-  propsInCat.add([#nm:"Moss Hang", #tp:"long", #depth:3, #tags:[], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."]]) 
-  propsInCat.add([#nm:"Moss Hang A", #tp:"long", #depth:3, #tags:["effectColorA"], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."]])
-  propsInCat.add([#nm:"Moss Hang B", #tp:"long", #depth:3, #tags:["effectColorB"], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."]])
+  -- LB
+  propsInCat.add([#nm:"Stretched Pipe", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"LB"])
+  propsInCat.add([#nm:"Twisted Thread", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"LB"])
+  propsInCat.add([#nm:"Stretched Wire", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"LB"])
+  propsInCat.add([#nm:"Long Barbed Wire", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"LB"])
+  
+  -- April
+  propsInCat.add([#nm:"Moss Drop", #tp:"long", #depth:3, #tags:[], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"], #author:"April"])
+  propsInCat.add([#nm:"Moss Drop A", #tp:"long", #depth:3, #tags:["effectColorA"], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"], #author:"April"])
+  propsInCat.add([#nm:"Moss Drop B", #tp:"long", #depth:3, #tags:["effectColorB"], #notes:["Keep in mind this long will droop in in front of anything solid, if you dont want something to collide with it, render it after this prop"], #author:"April"])
+  propsInCat.add([#nm:"Moss Hang", #tp:"long", #depth:3, #tags:[], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."], #author:"April"]) 
+  propsInCat.add([#nm:"Moss Hang A", #tp:"long", #depth:3, #tags:["effectColorA"], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."], #author:"April"])
+  propsInCat.add([#nm:"Moss Hang B", #tp:"long", #depth:3, #tags:["effectColorB"], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."], #author:"April"])
+  
+  gProps.add([#nm:"Procedural Plants", #clr:color(0, 255, 0), #prps:[]])
+  gProps[gProps.count].prps.add([#nm:"Fez Tree", #tp:"fezTree", #depth:10, #tags:[], #notes:["Click again after placing to determine the position of the tree's base. Press Q or E while in this mode to rotate the base.", "Please note that the preview line does not necessarily indicate the path that the trunk will take."], #previewColor:color(255,0, 0)])
   
   gTrashPropOptions = []
   gMegaTrash = []
@@ -568,6 +572,10 @@ on exitFrame me
           else
             gProps[q].prps[c].notes.add("Be aware that shadows and highlights will not rotate with the prop, so extreme rotations may cause incorrect shading.")
           end if
+        "fezTree":
+          gProps[q].prps[c].settings.addProp(#customDepth, gProps[q].prps[c].depth)
+          gProps[q].prps[c].settings.addProp(#leafdensity, 1)
+          gProps[q].prps[c].settings.addProp(#effectColor, 0)
         "variedDecal", "variedSoft":
           gProps[q].prps[c].settings.addProp(#variation, (gProps[q].prps[c].random = 0))
           gProps[q].prps[c].settings.addProp(#customDepth, gProps[q].prps[c].depth)
@@ -718,6 +726,12 @@ on exitFrame me
     gEffects[gEffects.count].efs.add( [#nm:"Restore As Scaffolding"]    )
     gEffects[gEffects.count].efs.add( [#nm:"Ceramic Chaos"]    )
     
+    gEffects.add([#nm:"Watcher", #efs:[]])
+    gEffects[gEffects.count].efs.add( [#nm:"Fez Tree"])
+    gEffects[gEffects.count].efs.add( [#nm:"Meat Blobs"])
+    gEffects[gEffects.count].efs.add( [#nm:"Brain Growers"])
+    gEffects[gEffects.count].efs.add( [#nm:"Upside Down Brain Growers"])
+    
     gEffects.add([#nm:"LB Plants", #efs:[]])
     gEffects[gEffects.count].efs.add( [#nm:"Colored Hang Roots"]    )
     gEffects[gEffects.count].efs.add( [#nm:"Colored Thick Roots"]   )
@@ -727,41 +741,41 @@ on exitFrame me
     gEffects[gEffects.count].efs.add( [#nm:"Root Plants"]   )
     
     gEffects.add([#nm:"LB Plants 2", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Foliage"]   )
-    gEffects[gEffects.count].efs.add( [#nm:"Mistletoe"]   )
-    gEffects[gEffects.count].efs.add( [#nm:"High Fern"]   )
-    gEffects[gEffects.count].efs.add( [#nm:"High Grass"]   )
-    gEffects[gEffects.count].efs.add( [#nm:"Little Flowers"]   )
-    gEffects[gEffects.count].efs.add( [#nm:"Wastewater Mold"]   )
+    gEffects[gEffects.count].efs.add( [#nm:"Foliage"])
+    gEffects[gEffects.count].efs.add( [#nm:"Mistletoe"])
+    gEffects[gEffects.count].efs.add( [#nm:"High Fern"])
+    gEffects[gEffects.count].efs.add( [#nm:"High Grass"])
+    gEffects[gEffects.count].efs.add( [#nm:"Little Flowers"])
+    gEffects[gEffects.count].efs.add( [#nm:"Wastewater Mold"])
     
     gEffects.add([#nm:"LB Plants 3", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Spinets"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Small Springs"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Mini Growers"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Clovers"]   )
+    gEffects[gEffects.count].efs.add( [#nm:"Spinets"])
+    gEffects[gEffects.count].efs.add( [#nm:"Small Springs"])
+    gEffects[gEffects.count].efs.add( [#nm:"Mini Growers"])
+    gEffects[gEffects.count].efs.add( [#nm:"Clovers"])
     gEffects[gEffects.count].efs.add([#nm:"Reeds"])
     gEffects[gEffects.count].efs.add([#nm:"Lavenders"])
     gEffects[gEffects.count].efs.add([#nm:"Dense Mold"])
     
     gEffects.add([#nm:"LB Erosion", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Ultra Super Erode"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Impacts"]    )
+    gEffects[gEffects.count].efs.add( [#nm:"Ultra Super Erode"])
+    gEffects[gEffects.count].efs.add( [#nm:"Impacts"])
     
     gEffects.add([#nm:"LB Paint Effects", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Super BlackGoo"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Stained Glass Properties"]    )
+    gEffects[gEffects.count].efs.add( [#nm:"Super BlackGoo"])
+    gEffects[gEffects.count].efs.add( [#nm:"Stained Glass Properties"])
     
     gEffects.add([#nm:"LB Natural", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Colored Barnacles"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Colored Rubble"]    )
+    gEffects[gEffects.count].efs.add( [#nm:"Colored Barnacles"])
+    gEffects[gEffects.count].efs.add( [#nm:"Colored Rubble"])
     gEffects[gEffects.count].efs.add([#nm:"Fat Slime"])
     gEffects[gEffects.count].efs.add([#nm:"Sand"])
     
     gEffects.add([#nm:"LB Artificial", #efs:[]])
-    gEffects[gEffects.count].efs.add( [#nm:"Assorted Trash"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Colored Wires"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Colored Chains"]    )
-    gEffects[gEffects.count].efs.add( [#nm:"Ring Chains"]    )
+    gEffects[gEffects.count].efs.add( [#nm:"Assorted Trash"])
+    gEffects[gEffects.count].efs.add( [#nm:"Colored Wires"])
+    gEffects[gEffects.count].efs.add( [#nm:"Colored Chains"])
+    gEffects[gEffects.count].efs.add( [#nm:"Ring Chains"])
     
     gEffects.add([#nm:"Dakras Plants", #efs:[]])
     gEffects[gEffects.count].efs.add([#nm:"Left Facing Kelp"])

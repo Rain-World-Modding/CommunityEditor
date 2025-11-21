@@ -160,9 +160,38 @@ on renderProp(prop, dp, qd, mdPoint, data)
       initRenderSoftProp(prop, qd, data, dp)
     "long", "customLong":
       renderLongProp(qd, prop, propsToRender[c][5], dp)
+    "fezTree":
+      renderFezTree(prop, propsToRender[c][5], dp, data)
   end case
   DoPropTags(prop, dp, qd)
 end
+
+on renderFezTree(prop, data, dp, propData)
+  writeMessage(data)
+  treeParams = data.treeParameters
+  treeBasePos = treeParams.trunkPos - gRenderCameraTilePos*20
+  treeBaseAngle = treeParams.trunkAngle
+  
+  treeLeavesPos = treeParams.leafPos - gRenderCameraTilePos*20
+  treeLeavesSize = treeParams.leafSize
+  treeLeavesAngle = treeParams.leafAngle
+  
+  treeLeavesDensity = propData.settings.leafdensity
+  
+  treeLayer = clamp(dp + 8, 3, 25)
+  --on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSize, treeLeavesAngle, treeLayer, effectLayer, leafDensity
+  
+  treeColorAsNumber = propData.settings.effectColor
+  treeColor = "C"
+  if treeColorAsNumber = 1 then 
+    treeColor = "A"
+  else if treeColorAsNumber = 2 then
+    treeColor = "B"
+  end if
+  
+  drawFezTreeAtPosition(treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSize, treeLeavesAngle, treeLayer, treeColor, treeLeavesDensity)
+end
+
 
 on renderVoxelProp(prop, dp, qd, mdPoint, propData)
   var = 0

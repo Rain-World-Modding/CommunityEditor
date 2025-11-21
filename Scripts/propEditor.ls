@@ -1,6 +1,11 @@
 global gLEProps, TEdraw, gDirectionKeys, gLOprops, gPEprops, gProps, gPEblink, gPEcounter, peScrollPos, peSavedRotat, peSavedFlip, peFreeQuad, peMousePos, lastPeMouse, mouseStill, propSettings, editSettingsProp, peSavedStretch
 global ropeModel, settingsPropType, gPEcolors, closestProp, longPropPlacePos, snapToGrid, preciseSnap, stg, ps, showControls, gFSLastTm, gFSFlag
+global fezTreeLeafPos, fezTreeTrunkPos, placingFezTree, fezTreeTrunkRot
 
+on initialize()
+  fezTreeTrunkRot = 0
+  placingFezTree = FALSE
+end
 
 on exitFrame me
   if (showControls) then
@@ -200,18 +205,36 @@ on exitFrame me
     end if
   end if
   
-  if checkCustomKeybind(#PropRotateLeft, "Q") then
-    gPEprops.propRotation = gPEprops.propRotation - 0.01
-    if checkCustomKeybind(#PropRotateFaster, " ") then
-      gPEprops.propRotation = gPEprops.propRotation - 0.1
+  if (placingFezTree = TRUE) then
+    if (fezTreeTrunkRot = VOID) then
+      fezTreeTrunkRot = 0
     end if
-    mouseStill = 0
-  else if checkCustomKeybind(#PropRotateRight, "E") then
-    gPEprops.propRotation = gPEprops.propRotation + 0.01
-    if checkCustomKeybind(#PropRotateFaster, " ") then 
-      gPEprops.propRotation = gPEprops.propRotation + 0.1
+    
+    if checkCustomKeybind(#PropRotateLeft, "Q") and _movie.window.sizeState <> #minimized then
+      fezTreeTrunkRot = fezTreeTrunkRot - 0.5
+      if checkCustomKeybind(#PropRotateFaster, " ") then
+        fezTreeTrunkRot = fezTreeTrunkRot - 1
+      end if
+    else if checkCustomKeybind(#PropRotateRight, "E") and _movie.window.sizeState <> #minimized then
+      fezTreeTrunkRot = fezTreeTrunkRot + 0.5
+      if checkCustomKeybind(#PropRotateFaster, " ") then 
+        fezTreeTrunkRot = fezTreeTrunkRot + 1
+      end if
     end if
-    mouseStill = 0
+  else
+    if checkCustomKeybind(#PropRotateLeft, "Q") then
+      gPEprops.propRotation = gPEprops.propRotation - 0.01
+      if checkCustomKeybind(#PropRotateFaster, " ") then
+        gPEprops.propRotation = gPEprops.propRotation - 0.1
+      end if
+      mouseStill = 0
+    else if checkCustomKeybind(#PropRotateRight, "E") then
+      gPEprops.propRotation = gPEprops.propRotation + 0.01
+      if checkCustomKeybind(#PropRotateFaster, " ") then 
+        gPEprops.propRotation = gPEprops.propRotation + 0.1
+      end if
+      mouseStill = 0
+    end if
   end if
   
   if(gPEprops.propRotation < 0)then
@@ -456,6 +479,26 @@ on exitFrame me
   end if
   
   
+  --fezTreeLeafPos, fezTreeTrunkPos, placingFezTree
+  if (prop <> VOID) and (prop.tp = "fezTree")then
+    fezTreeTrunkPos = peMousePos
+    
+    -- if you're clicking and we're not in placing fez tree mode, enter placing fez tree mode and cancel the click.
+    if (placingFezTree = FALSE) or (placingFezTree = VOID) then
+      if (actn1) and (_mouse.mouseLoc.inside(rect(16, 16, 848, 656))) then
+        fezTreeLeafPos = peMousePos
+        placingFezTree = TRUE
+        actn1 = 0
+      end if
+    else
+      peMousePos = fezTreeLeafPos
+      if (actn1) and (_mouse.mouseLoc.inside(rect(16, 16, 848, 656))) then
+        fezTreeLeafPos = screenPosToWorldPos(fezTreeLeafPos) + (degToVec(gPEprops.propRotation) * gPEprops.propStretchY*-80)
+        fezTreeTrunkPos = screenPosToWorldPos(fezTreeTrunkPos)
+        placingFezTree = FALSE
+      end if
+    end if
+  end if
   
   
   
@@ -690,6 +733,12 @@ on exitFrame me
     end if
     
     sprite(269).visibility = viewRope
+  else if (placingFezTree = TRUE) then -- draw the leaf preview into the rope preview image because i am a little silly and dont want to make a whole new thing for it : )
+    ropeFrames = 0
+    member("ropePreview").image.copyPixels(member("pxl").image,  member("ropePreview").image.rect, rect(0,0,1,1), {#color:color(255, 255, 255)})
+    drawFezTreeTrunkPreview(screenPosToWorldPos(fezTreeTrunkPos), fezTreeTrunkRot, screenPosToWorldPos(fezTreeLeafPos) + (degToVec(gPEprops.propRotation) * gPEprops.propStretchY*-80), gPEprops.propRotation, "ropePreview", color(0, 0, 0))
+    
+    sprite(269).visibility = true
   else
     ropeFrames = 0
     sprite(269).visibility = false
@@ -777,6 +826,10 @@ on propPlaceLayer()
   return ((gPEprops.workLayer-1) * 10) + gPEprops.depth
 end
 
+on screenPosToWorldPos(screenPos)
+  return screenPos * (20.0/16.0) + gLEProps.camPos*20 + point(-20, -20)
+end
+
 on placeProp(qd)
   -- member("propsImage").image.copyPixels(mem.image, qd, mem.image.rect, {#ink:36})
   prop = [-propPlaceLayer(), gProps[gPEprops.pmPos.locH].prps[gPEprops.pmPos.locV].nm, gPEprops.pmPos, qd, [#settings:propSettings.duplicate()]]
@@ -796,6 +849,16 @@ on placeProp(qd)
       repeat with q = 1 to ropeModel.segments.count then
         prop[5].points.add(script("ropeModel").SmoothedPos(q))
       end repeat
+      
+    "fezTree":
+      prop[5].addProp(#treeParameters, [:])
+      prop[5].treeParameters.addProp(#trunkPos, fezTreeTrunkPos)
+      prop[5].treeParameters.addProp(#trunkAngle, fezTreeTrunkRot)
+      prop[5].treeParameters.addProp(#leafPos, fezTreeLeafPos)
+      -- 110 135
+      prop[5].treeParameters.addProp(#leafSize, point(gPEprops.propStretchX * 80 * 0.6875, gPEprops.propStretchY * 80 * 0.84375))
+      prop[5].treeParameters.addProp(#leafAngle, gPEprops.propRotation)
+      
     "variedDecal", "variedSoft", "variedStandard":
       if(prop[5].settings.variation = 0)then
         prop[5].settings.variation = random(gProps[gPEprops.pmPos.locH].prps[gPEprops.pmPos.locV].vars)
@@ -867,9 +930,15 @@ on renderPropsImage()
             member("propsImage").image.copyPixels(member("pxl").image, rect(adaptedPos-point(1,1), adaptedPos+point(2,2)), rect(0,0,1,1), {#color:propData.previewColor})
             q = q + propData.previewEvery
           end repeat
+          
+        "fezTree":
+          member("propsImage").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd})
+          drawFezTreeTrunkPreview(prop[5].treeParameters.trunkPos, prop[5].treeParameters.trunkAngle, prop[5].treeParameters.leafPos, prop[5].treeParameters.leafAngle, "propsImage", propData.previewColor)
+          
         "variedDecal", "variedSoft", "variedStandard":
           updateVariedPreview(propData, prop[5].settings.variation)
           member("propsImage").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd, #color:clr})
+          
         otherwise:
           member("propsImage").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd, #color:clr})
       end case
@@ -887,9 +956,15 @@ on renderPropsImage()
             member("propsImage2").image.copyPixels(member("pxl").image, rect(adaptedPos-point(1,1), adaptedPos+point(2,2)), rect(0,0,1,1), {#color:propData.previewColor})
             q = q + propData.previewEvery
           end repeat
+          
+        "fezTree":
+          member("propsImage2").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd})
+          drawFezTreeTrunkPreview(prop[5].treeParameters.trunkPos, prop[5].treeParameters.trunkAngle, prop[5].treeParameters.leafPos, prop[5].treeParameters.leafAngle, "propsImage2", propData.previewColor)
+          
         "variedDecal", "variedSoft", "variedStandard":
           updateVariedPreview(propData, prop[5].settings.variation)
           member("propsImage2").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd, #color:clr})
+          
         otherwise:
           member("propsImage2").image.copyPixels(mem.image, prop[4]-camPosQuad, mem.image.rect, {#ink:36, #blend:blnd, #color:clr})
       end case
@@ -905,6 +980,29 @@ on renderPropsImage()
       updateVariedPreview(gProps[gPEprops.pmpos.locH].prps[gPEprops.pmPos.locV], propSettings.variation)
     end if
   end if
+end
+
+
+on drawFezTreeTrunkPreview(tpos, tang, lpos, lang, img, col)
+  tPosCpnt = tpos + (degToVec(tang) * 80)
+  lposCpnt = lpos + (degToVec(lang) * -80)
+  
+  iterations = (distanceBetweenPoints(lpos, tpos) / 8.0).integer + 1
+  repeat with q = 0 to iterations
+    adaptedPos = bezier(tpos, tPosCpnt, lpos, lposCpnt, q.float / iterations.float)
+    adaptedPos = adaptedPos - gLEProps.camPos*20.0
+    adaptedPos = adaptedPos * 16.0/20.0
+    member(img).image.copyPixels(member("pxl").image, rect(adaptedPos-point(1,1), adaptedPos+point(2,2)), member("pxl").image.rect, {#color:col})
+  end repeat
+  
+  basePos = tpos
+  basePos = basePos - gLEProps.camPos*20.0
+  basePos = basePos * 16.0/20.0
+  
+  drawRec = rect(basePos-point(10, 10), basePos+point(10, 10))
+  drawQuad = rotateToQuad(drawRec, maxAbs(tang, 1))
+  member(img).image.copyPixels(member("shortCutArrow0.-1").image, offsetQuad(drawQuad, degToVec(maxAbs(tang, 1)) * 20), member("shortCutArrow0.-1").image.rect, {#color:col, #ink:36})
+  member(img).image.copyPixels(member("lightSource").image, drawRec, member("lightSource").image.rect, {#color:col, #ink:36})
 end
 
 
@@ -1513,7 +1611,7 @@ on propPreviewMember(prop)
   end if
   sav2.name = "previewImprt"
   --INTERNAL
-  if (checkDRInternal(prop.nm)) then
+  if (checkDRInternal(prop.nm)) or (prop.nm = "Fez Tree") then
     sav2.image = member(prop.nm).image
     member("previewImprt").image = member(prop.nm).image
   end if
@@ -1550,7 +1648,7 @@ on propPreviewMember(prop)
         --end repeat
       end repeat
       
-    "rope", "long", "customRope", "customLong":
+    "rope", "long", "customRope", "customLong", "fezTree":
       newMem.image = image(member("previewImprt").image.width, member("previewImprt").image.height, 16)
       newMem.image.copyPixels(member("previewImprt").image, newMem.image.rect, member("previewImprt").image.rect)
   end case
@@ -1561,6 +1659,7 @@ on propPreviewMember(prop)
   
   return newMem
 end
+
 
 
 

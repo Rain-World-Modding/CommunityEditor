@@ -28,6 +28,11 @@ end
 
 on newFrame me
   sprite(59).locV = c-8
+  
+  if bkgFix and gDecalColors.count < 1 then
+    gDecalColors.add(color(255, 255, 255))
+  end if
+  
   repeat with q = 1 to 1400 then
     
     layer = 1
@@ -184,9 +189,6 @@ on newFrame me
                 if(decalColor=0)and(gDecalColors.count < 255)then
                   gDecalColors.add(dcGet)
                   decalColor = gDecalColors.count
-                end if
-                if (bkgFix) and (decalColor < 2) then
-                  decalColor = 2
                 end if
                 col.blue = 256-decalColor
                 greenCol = greenCol + 8

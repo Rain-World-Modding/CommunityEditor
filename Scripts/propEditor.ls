@@ -770,6 +770,10 @@ on updateWorkLayerText()
   txt = "Work Layer:" && string(gPEprops.workLayer)
   put RETURN after txt
   put "Prop depth: " & propPlaceLayer() after txt
+  prp = gProps[gPEprops.pmPos.locH].prps[gPEprops.pmPos.locV]
+  if prp.findPos(#author) then
+    txt = txt & RETURN & "Author:" && prp[#author]
+  end if
   member("layerText").text = txt
   if(gPEprops.pmPos.locH > gProps.count) then
     gPEprops.pmPos.locH = 1

@@ -1123,6 +1123,55 @@ on renderRopeSegment(num, prop, data, dp, pos, dir, perp, lastPos, lastDir, last
       mdPnt = mdPnt - gRenderCameraTilePos*20
       member("layer"&string(dp)).image.copyPixels(member("ringChainGraf").image, rect(mdPnt,mdPnt)+rect(-5,-5,5,5), rect(80,0,90,10), {#ink:36})
       
+      
+    "Small Vents":
+      wdth = 17
+      pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
+      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
+      repeat with a = 0 to 4 then
+        if(dp + a + 1 <= 29)then
+          member("layer"&string(dp + a + 1)).image.copyPixels(member("smallVentGraf").image, pastQd, rect(36,a*48,66,(a+1)*48), {#ink:36})
+        else 
+          exit repeat
+        end if
+      end repeat
+      
+      pastQd = [pos - perp*wdth - dir*5, pos + perp*wdth - dir*5, pos + perp*wdth + dir*5, pos - perp*wdth + dir*5]
+      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
+      repeat with a = 0 to 5 then
+        if(dp + a <= 29)then
+          member("layer"&string(dp + a)).image.copyPixels(member("smallVentGraf").image, pastQd, rect(0,a*11,34,(a+1)*11), {#ink:36})
+        else 
+          exit repeat
+        end if
+      end repeat
+      
+    "Reinforced Duct":
+      wdth = 53
+      pastQd = [pos - perp*wdth, pos + perp*wdth, lastPos + lastPerp*wdth, lastPos - lastPerp*wdth]
+      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
+      repeat with a = 0 to 9 then
+        if(dp + a + 1 <= 29)then
+          member("layer"&string(dp + a + 1)).image.copyPixels(member("reinforcedDuctGraf").image, pastQd, rect(106,a*104,212,(a+1)*104), {#ink:36})
+        else 
+          exit repeat
+        end if
+      end repeat
+      
+      pastQd = [pos - perp*wdth - dir*5, pos + perp*wdth - dir*5, pos + perp*wdth + dir*5, pos - perp*wdth + dir*5]
+      pastQd = pastQd - [gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20, gRenderCameraTilePos*20]
+      
+      repeat with a = 0 to 9 then
+        if(dp + a <= 29)then
+          member("layer"&string(dp + a)).image.copyPixels(member("reinforcedDuctGraf").image, pastQd, rect(0,a*12,106,(a+1)*12), {#ink:36})
+        else 
+          exit repeat
+        end if
+      end repeat
+      
   end case
 end
 

@@ -326,7 +326,8 @@ on initDRInternal()
   "AltGrateC1", "AltGrateC2", "AltGrateE1", "AltGrateE2", "AltGrateF1", "AltGrateF2", "AltGrateF3", "AltGrateF4", "AltGrateG1", "AltGrateG2", "AltGrateH", "AltGrateI",\
   "AltGrateF2", "AltGrateJ1", "AltGrateJ2", "AltGrateJ3", "AltGrateJ4", "AltGrateK1", "AltGrateK2", "AltGrateK3", "AltGrateK4", "AltGrateL", "AltGrateM", "AltGrateN",\
   "AltGrateO", "Big Big Pipe", "Ring Chain", "Stretched Pipe", "Stretched Wire", "Twisted Thread", "Christmas Wire", "Ornate Wire", "Dune Sand", "Big Chain", "Chunky Chain",\
-  "Big Bike Chain", "Huge Bike Chain", "Long Barbed Wire", "Small Chain", "Fat Chain", "Moss Drop", "Moss Drop A", "Moss Drop B", "Moss Hang", "Moss Hang A", "Moss Hang B"]
+  "Big Bike Chain", "Huge Bike Chain", "Long Barbed Wire", "Small Chain", "Fat Chain", "Moss Drop", "Moss Drop A", "Moss Drop B", "Moss Hang", "Moss Hang A", "Moss Hang B", \
+  "Small Vents", "Reinforced Duct"]
   RandomMetals_grabTiles = ["Metal", "Metal construction", "Plate"]
   RandomMetals_allowed = ["Small Metal", "Metal Floor", "Square Metal", "Big Metal", "Big Metal Marked", "C Beam Horizontal AA", "C Beam Horizontal AB", "C Beam Vertical AA", "C Beam Vertical BA", "Plate 2"]
   ChaoticStone2_needed = ["Small Stone", "Square Stone", "Tall Stone", "Wide Stone", "Big Stone", "Big Stone Marked"]

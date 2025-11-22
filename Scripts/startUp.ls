@@ -443,6 +443,10 @@ on exitFrame me
           ad = [#nm:tl.nm, #tp:"standard", #colorTreatment:"standard", #sz:tl.sz + point(tl.bfTiles*2, tl.bfTiles*2), #depth:10 + (tl.specs2 <> [])*10, #repeatL:repeatL, #tags:noFixTags, #layerExceptions:[], #notes:["Tile as prop"]]
         end if
         
+        if tl.findPos(#author) then
+          ad.addProp(#author, tl[#author])
+        end if
+        
         if gPageTick = 0 then
           gProps.add([#nm:gTiles[q].nm, #clr:color(255,0,0), #prps:[]])
         end if
@@ -462,20 +466,20 @@ on exitFrame me
   
   gProps.add([#nm:"Rope type props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:3, #collisionDepth:0, #segRad:1, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(255,0, 0), #previewEvery:4, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"Tube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:10, #collisionDepth:2, #segRad:4.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(0,0, 255), #previewEvery:2, #edgeDirection:5, #rigid:1.6, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"ThickWire", #tp:"rope", #depth:3, #tags:[], #notes:[], #segmentLength:4, #collisionDepth:1, #segRad:2, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,255, 0), #previewEvery:2, #edgeDirection:0, #rigid:0.2, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"RidgedTube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:5, #collisionDepth:2, #segRad:5, #grav:0.5, #friction:0.3, #airFric:0.7, #stiff:1, #previewColor:color(255,0,255), #previewEvery:2, #edgeDirection:0, #rigid:0.1, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"Fuel Hose", #tp:"rope", #depth:5, #tags:[], #notes:[], #segmentLength:16, #collisionDepth:1, #segRad:7, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,150,0), #previewEvery:1, #edgeDirection:1.4, #rigid:0.2, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"Broken Fuel Hose", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:16, #collisionDepth:1, #segRad:7, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,150,0), #previewEvery:1, #edgeDirection:1.4, #rigid:0.2, #selfPush:0, #sourcePush:0])
-  propsInCat.add([#nm:"Large Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:9.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,0), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
-  propsInCat.add([#nm:"Large Chain 2", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:9.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(20,205,0), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0])
-  propsInCat.add([#nm:"Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:38, #collisionDepth:3, #segRad:16.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,100,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:16.5, #sourcePush:0])
-  propsInCat.add([#nm:"Zero-G Tube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:10, #collisionDepth:2, #segRad:4.5, #grav:0, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(0,255, 0), #previewEvery:2, #edgeDirection:0, #rigid:0.6, #selfPush:2, #sourcePush:0.5])
-  propsInCat.add([#nm:"Zero-G Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:8, #collisionDepth:0, #segRad:1, #grav:0, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(255,0, 0), #previewEvery:2, #edgeDirection:0.3, #rigid:0.5, #selfPush:1.2, #sourcePush:0.5])
-  propsInCat.add([#nm:"Fat Hose", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(0,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
-  propsInCat.add([#nm:"Wire Bunch", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
-  propsInCat.add([#nm:"Wire Bunch 2", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1])
+  propsInCat.add([#nm:"Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:3, #collisionDepth:0, #segRad:1, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:0, #previewColor:color(255,0, 0), #previewEvery:4, #edgeDirection:0, #rigid:0, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Tube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:10, #collisionDepth:2, #segRad:4.5, #grav:0.5, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(0,0, 255), #previewEvery:2, #edgeDirection:5, #rigid:1.6, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"ThickWire", #tp:"rope", #depth:3, #tags:[], #notes:[], #segmentLength:4, #collisionDepth:1, #segRad:2, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,255, 0), #previewEvery:2, #edgeDirection:0, #rigid:0.2, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"RidgedTube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:5, #collisionDepth:2, #segRad:5, #grav:0.5, #friction:0.3, #airFric:0.7, #stiff:1, #previewColor:color(255,0,255), #previewEvery:2, #edgeDirection:0, #rigid:0.1, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Fuel Hose", #tp:"rope", #depth:5, #tags:[], #notes:[], #segmentLength:16, #collisionDepth:1, #segRad:7, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,150,0), #previewEvery:1, #edgeDirection:1.4, #rigid:0.2, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Broken Fuel Hose", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:16, #collisionDepth:1, #segRad:7, #grav:0.5, #friction:0.8, #airFric:0.9, #stiff:1, #previewColor:color(255,150,0), #previewEvery:1, #edgeDirection:1.4, #rigid:0.2, #selfPush:0, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Large Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:9.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,0), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Large Chain 2", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:9.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(20,205,0), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:38, #collisionDepth:3, #segRad:16.5, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,100,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:16.5, #sourcePush:0, #author:"Joar"])
+  propsInCat.add([#nm:"Zero-G Tube", #tp:"rope", #depth:4, #tags:[], #notes:[], #segmentLength:10, #collisionDepth:2, #segRad:4.5, #grav:0, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(0,255, 0), #previewEvery:2, #edgeDirection:0, #rigid:0.6, #selfPush:2, #sourcePush:0.5, #author:"Joar"])
+  propsInCat.add([#nm:"Zero-G Wire", #tp:"rope", #depth:0, #tags:[], #notes:[], #segmentLength:8, #collisionDepth:0, #segRad:1, #grav:0, #friction:0.5, #airFric:0.9, #stiff:1, #previewColor:color(255,0, 0), #previewEvery:2, #edgeDirection:0.3, #rigid:0.5, #selfPush:1.2, #sourcePush:0.5, #author:"Joar"])
+  propsInCat.add([#nm:"Fat Hose", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:40, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(0,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1, #author:"Joar"])
+  propsInCat.add([#nm:"Wire Bunch", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1, #author:"Joar"])
+  propsInCat.add([#nm:"Wire Bunch 2", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:50, #collisionDepth:3, #segRad:20, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(255,100,150), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:10, #sourcePush:0.1, #author:"Joar"])
   
   gProps.add([#nm:"Community Rope Props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
@@ -495,14 +499,16 @@ on exitFrame me
   propsInCat.add([#nm:"Chunky Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:28, #collisionDepth:3, #segRad:19, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(0,255,40), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:6.5, #sourcePush:0, #author:"Dakras"])
   propsInCat.add([#nm:"Big Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:76, #collisionDepth:3, #segRad:33, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,150,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:33, #sourcePush:0, #author:"Dakras"])
   propsInCat.add([#nm:"Huge Bike Chain", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:152, #collisionDepth:3, #segRad:66, #grav:0.9, #friction:0.8, #airFric:0.95, #stiff:1, #previewColor:color(100,200,100), #previewEvery:1, #edgeDirection:0.0, #rigid:0.0, #selfPush:66, #sourcePush:0, #author:"Dakras"])
+  propsInCat.add([#nm:"Small Vents", #tp:"rope", #depth:6, #tags:[], #notes:[], #segmentLength:48, #collisionDepth: 6, #segRad:28, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(30,70,190), #previewEvery:1, #edgeDirection:0.1, #rigid:0.1, #selfPush:12, #sourcePush:0.1, #author:"Dakras"])
+  propsInCat.add([#nm:"Reinforced Duct", #tp:"rope", #depth:9, #tags:[], #notes:[], #segmentLength:104, #collisionDepth:4, #segRad:50, #grav:0.9, #friction:0.6, #airFric:0.95, #stiff:1, #previewColor:color(120,10,190), #previewEvery:1, #edgeDirection:0.1, #rigid:0.2, #selfPush:50, #sourcePush:0.1, #author:"Dakras"])
   
   gProps.add([#nm:"Long props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
-  propsInCat.add([#nm:"Cabinet Clamp", #tp:"long", #depth:0, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Drill Suspender", #tp:"long", #depth:5, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Thick Chain", #tp:"long", #depth:0, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Drill", #tp:"long", #depth:10, #tags:[], #notes:[]])
-  propsInCat.add([#nm:"Piston", #tp:"long", #depth:4, #tags:[], #notes:[]])
+  propsInCat.add([#nm:"Cabinet Clamp", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"Joar"])
+  propsInCat.add([#nm:"Drill Suspender", #tp:"long", #depth:5, #tags:[], #notes:[], #author:"Joar"])
+  propsInCat.add([#nm:"Thick Chain", #tp:"long", #depth:0, #tags:[], #notes:[], #author:"Joar"])
+  propsInCat.add([#nm:"Drill", #tp:"long", #depth:10, #tags:[], #notes:[], #author:"Joar"])
+  propsInCat.add([#nm:"Piston", #tp:"long", #depth:4, #tags:[], #notes:[], #author:"Joar"])
   
   gProps.add([#nm:"Community Long Props", #clr:color(0, 255, 0), #prps:[]])
   propsInCat = gProps[gProps.count].prps
@@ -522,7 +528,7 @@ on exitFrame me
   propsInCat.add([#nm:"Moss Hang B", #tp:"long", #depth:3, #tags:["effectColorB"], #notes:["For best results you should place this on the back sublayers of whatever layer you're trying to place this on, and allow the moss to kinda 'lerch' forward. The moss starts placing in the middle of the long, and follows gravity."], #author:"April"])
   
   gProps.add([#nm:"Procedural Plants", #clr:color(0, 255, 0), #prps:[]])
-  gProps[gProps.count].prps.add([#nm:"Fez Tree", #tp:"fezTree", #depth:10, #tags:[], #notes:["Click again after placing to determine the position of the tree's base. Press Q or E while in this mode to rotate the base.", "Please note that the preview line does not necessarily indicate the path that the trunk will take."], #previewColor:color(255,0, 0)])
+  gProps[gProps.count].prps.add([#nm:"Fez Tree", #tp:"fezTree", #depth:10, #tags:[], #notes:["Click again after placing to determine the position of the tree's base. Press Q or E while in this mode to rotate the base.", "Please note that the preview line does not necessarily indicate the path that the trunk will take."], #previewColor:color(255,0, 0), #author:"Cappin"])
   
   gTrashPropOptions = []
   gMegaTrash = []

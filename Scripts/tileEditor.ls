@@ -411,7 +411,7 @@ on updateTileMenu(mv)
   end if
   
   isTilePositionLegal(gTEprops.lstMsPs)
-  
+  ChangeLayerText()
 end
 
 
@@ -807,7 +807,7 @@ on changeLayer()
     sprite(5).blend = 60
     sprite(6).blend = 10
   end if
-  member("layerText").text = "Work Layer:" && string(gTEprops.workLayer)
+  ChangeLayerText()
   
   pos = 2 - gTEprops.workLayer
   sprite(1).loc = point(432, 336) + point(pos+1,-pos-1)*3
@@ -816,6 +816,15 @@ on changeLayer()
   sprite(4).loc = point(432, 336) + point(pos,-pos)*3
   sprite(5).loc = point(432, 336) + point(pos-1,-pos+1)*3
   sprite(6).loc = point(432, 336) + point(pos-1,-pos+1)*3
+end
+
+on ChangeLayerText()
+  txt = "Work Layer:" && string(gTEprops.workLayer)
+  tl = gTiles[gTEprops.tmPos.locH].tls[gTEprops.tmPos.locV]
+  if tl.findPos(#author) then
+    txt = txt & RETURN & "Author:" && tl[#author]
+  end if
+  member("layerText").text = txt
 end
 
 

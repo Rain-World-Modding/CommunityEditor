@@ -31,6 +31,20 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
     end if
     effGraf = effGraf.image
     
+    -- Get what layers
+    repeatL = [1]
+    if (cEff.findPos("repeatL") > 0) then
+      repeatL = cEff["repeatL"]
+    end if
+    totalLayers = 0
+    repeat with num in repeatL
+      totalLayers = totalLayers + num
+    end repeat
+    totalImageLayers = repeatL.count
+    currentImageLayer = 0
+    repeatL.add(1) -- lazy way to prevent index out of range error
+    
+    -- Switch statement for type
     case cEff.tp of
       "standardPlant", "standardHanger", "standardClinger": -- standard plant effect
         -- Get potential layers
@@ -74,7 +88,6 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
               
               var = random(cEff.vars)
               if cEff.findPos("strengthAffectVar") then var = random(restrict((cEff.vars*(mtrx[q2][c2]-11+random(21))*0.01).integer, 1, cEff.vars))
-              grab = rect(cEff.pxlSz.locH * (var-1), 1, cEff.pxlSz.locH * var, 1+cEff.pxlSz.locV)
               rot = 0
               if cEff.findPos("randRot") then rot = random(cEff.randRot * 2 + 1) - cEff.randRot
               
@@ -119,29 +132,54 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
                 if cEff.pickColor then useEffCol = 1
               end if
               
-              if useEffCol then
-                member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#color:colr, #ink:36})
-                if colr <> color(0,255,0) then
-                  if cEff.findPos("hasGrad") then
-                    if cEff.hasGrad then grab = grab + rect(0, cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
+              repeat with dL = 0 to totalLayers-1
+                -- Draw
+                grab = rect(cEff.pxlSz.locH * (var-1), 1 + cEff.pxlSz.locV*currentImageLayer, cEff.pxlSz.locH * var, 1+cEff.pxlSz.locV)
+                if useEffCol then
+                  member("layer"&string(d + dL)).image.copyPixels(effGraf, qd, grab, {#color:colr, #ink:36})
+                  if colr <> color(0,255,0) then
+                    if cEff.findPos("hasGrad") then
+                      if cEff.hasGrad then grab = grab + rect(0, cEff.pxlSz.locV * totalImageLayers, 0, cEff.pxlSz.locV)
+                    end if
+                    copyPixelsToEffectColor(gdLayer, d + dL, qd, "previewImprt", grab, 0.5, VOID)
                   end if
-                  copyPixelsToEffectColor(gdLayer, d, qd, "previewImprt", grab, 0.5, VOID)
-                end if
-              else
-                member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#ink:36})
-                if cEff.findPos("forceGrad") then
-                  if cEff.forceGrad then
-                    grab = grab + rect(0, cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
-                    copyPixelsToEffectColor("A", d, qd, "previewImprt", grab, 0.5, VOID)
-                    copyPixelsToEffectColor("B", d, qd, "previewImprt", grab, 0.5, VOID)
+                else
+                  member("layer"&string(d + dL)).image.copyPixels(effGraf, qd, grab, {#ink:36})
+                  if cEff.findPos("forceGrad") then
+                    if cEff.forceGrad then
+                      grab = grab + rect(0, cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
+                      copyPixelsToEffectColor("A", d + dL, qd, "previewImprt", grab, 0.5, VOID)
+                      copyPixelsToEffectColor("B", d + dL, qd, "previewImprt", grab, 0.5, VOID)
+                    end if
                   end if
                 end if
-              end if
+                
+                -- Update layer count
+                repeatL[1] = repeatL[1] - 1
+                if repeatL[1] = 0 then
+                  repeatL.deleteAt(1)
+                  currentImageLayer = currentImageLayer + 1
+                end if
+              end repeat
             end repeat
           end if
         end repeat
         
       "grower", "hanger", "clinger": -- grower effect and its extended family
+        
+        -- Get what layers but for the tip
+        repeatLTip = [1]
+        if (cEff.findPos("repeatLTip") > 0) then
+          repeatL = cEff["repeatLTip"]
+        end if
+        totalLayersTip = 0
+        repeat with num in repeatLTip
+          totalLayersTip = totalLayersTip + num
+        end repeat
+        totalImageLayersTip = repeatL.count
+        currentImageLayerTip = 0
+        
+        -- Now potentially draw
         if (random(100) < mtrx[q2][c2]) and (random(3) > 1) then
           
           case lrSup of
@@ -180,13 +218,6 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
           doingTip = 0
           if cEff.findPos("tipGraf") then
             doingTip = 1
-            effGraf = member("previewImprt")
-            if gLastImported <> cEff.tipGraf then
-              member("previewImprt").importFileInto("Effects/" & cEff.tipGraf & ".png")
-              effGraf.name = "previewImprt"
-              gLastImported = cEff.tipGraf
-            end if
-            effGraf = effGraf.image
           end if
           
           -- Set up other variables
@@ -208,10 +239,10 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
           end if
           
           quadsToDraw = []
-          drawQuad = 0
+          drawQuad = 1-skyRootsFix
           
           -- Draw loop: as with every grower, draw from tip to ground (or void)
-          repeat while (pnt.locV < gLOprops.size.locV * 20 + 100) and (pnt.locV > -100) and (pnt.locH < gLOprops.size.locH * 20 + 100) and (pnt.locH > -100) then
+          repeat while (pnt.locV < gLOprops.size.locV * 20 + 3000) and (pnt.locV > -3000) and (pnt.locH < gLOprops.size.locH * 20 + 3000) and (pnt.locH > -3000) then
             if doingTip = 1 then
               vars = cEff.tipVars
               pxlSz = cEff.tipPxlSz
@@ -253,65 +284,38 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
               if cEff.pickColor then useEffCol = 1
             end if
             
-            -- Draw the damn thing
-            if skyRootsFix then
-              quadToAdd = [qd, effGraf, grab, -1, -1, blnd, blnd2, doingTip]
-              
-              if useEffCol then
-                if colr <> color(0,255,0) then
-                  if cEff.findPos("hasGrad") then
-                    if cEff.hasGrad then
-                      grab = grab + rect(0, pxlSz.locV, 0, pxlSz.locV)
-                      quadToAdd[4] = grab
-                    end if
-                  end if
-                  
-                  if cEff.findPos("effectFadeOut2") and blnd2 > 0 and doingTip = 0 then
-                    qd = (lastPnt + pnt) / 2.0
-                    qd = rect(qd, qd) + rect(-pxlSz.locH*sz/1.6,-pxlSz.locV/1.6, pxlSz.locH*sz/1.6, pxlSz.locV/1.6)
-                    qd = rotateToQuadFix(qd, lookAtpoint(lastPnt, pnt))
-                    if flp then qd = flipQuadH(qd)
-                    quadToAdd[5] = qd
-                  end if
-                end if
-              else
-                if cEff.findPos("forceGrad") then
-                  if cEff.forceGrad then
-                    grab = grab + rect(0, pxlSz.locV, 0, pxlSz.locV)
+            -- Figure out where to draw the thingy
+            quadToAdd = [qd, effGraf, grab, -1, -1, blnd, blnd2, doingTip]
+            
+            tempImageLayers = totalImageLayers
+            if doingTip = 1 then tempImageLayers = totalImageLayersTip
+            if useEffCol then
+              if colr <> color(0,255,0) then
+                if cEff.findPos("hasGrad") then
+                  if cEff.hasGrad then
+                    grab = grab + rect(0, pxlSz.locV * tempImageLayers, 0, pxlSz.locV)
                     quadToAdd[4] = grab
                   end if
                 end if
-              end if
-              
-              quadsToDraw.add(quadToAdd)
-            else
-              if useEffCol then
-                member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#color:colr, #ink:36})
-                if colr <> color(0,255,0) then
-                  if cEff.findPos("hasGrad") then
-                    if cEff.hasGrad then grab = grab + rect(0, pxlSz.locV, 0, pxlSz.locV)
-                  end if
-                  copyPixelsToEffectColor(gdLayer, d, qd, "previewImprt", grab, 0.5, blnd)
-                  
-                  if cEff.findPos("effectFadeOut2") and blnd2 > 0 and doingTip = 0 then
-                    qd = (lastPnt + pnt) / 2.0
-                    qd = rect(qd, qd) + rect(-pxlSz.locH*sz/1.6,-pxlSz.locV/1.6, pxlSz.locH*sz/1.6, pxlSz.locV/1.6)
-                    qd = rotateToQuadFix(qd, lookAtpoint(lastPnt, pnt))
-                    if flp then qd = flipQuadH(qd)
-                    copyPixelsToEffectColor(gdLayer, d, qd, "softBrush1", member("softBrush1").image.rect, 0.5, blnd2)
-                  end if
+                
+                if cEff.findPos("effectFadeOut2") and blnd2 > 0 and doingTip = 0 then
+                  qd = (lastPnt + pnt) / 2.0
+                  qd = rect(qd, qd) + rect(-pxlSz.locH*sz/1.6,-pxlSz.locV/1.6, pxlSz.locH*sz/1.6, pxlSz.locV/1.6)
+                  qd = rotateToQuadFix(qd, lookAtpoint(lastPnt, pnt))
+                  if flp then qd = flipQuadH(qd)
+                  quadToAdd[5] = qd
                 end if
-              else
-                member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#ink:36})
-                if cEff.findPos("forceGrad") then
-                  if cEff.forceGrad then
-                    grab = grab + rect(0, pxlSz.locV, 0, pxlSz.locV)
-                    copyPixelsToEffectColor("A", d, qd, "previewImprt", grab, 0.5, blnd)
-                    copyPixelsToEffectColor("B", d, qd, "previewImprt", grab, 0.5, blnd)
-                  end if
+              end if
+            else
+              if cEff.findPos("forceGrad") then
+                if cEff.forceGrad then
+                  grab = grab + rect(0, pxlSz.locV, 0, pxlSz.locV)
+                  quadToAdd[4] = grab + tempImageLayers
                 end if
               end if
             end if
+            
+            quadsToDraw.add(quadToAdd)
             
             
             -- Adjust per-segment variables
@@ -324,16 +328,9 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
               sz = restrict(sz + random(1000)/1000.0 * cEff.szChange[3], min(cEff.szChange[1], cEff.szChange[2]), max(cEff.szChange[1], cEff.szChange[2]))
             end if
             
-            -- Switch graphic and reset after tip
+            -- Reset after tip
             if doingTip = 1 then
               doingTip = 0
-              effGraf = member("previewImprt")
-              if gLastImported <> cEff.nm then
-                member("previewImprt").importFileInto("Effects/" & cEff.nm & ".png")
-                effGraf.name = "previewImprt"
-                gLastImported = cEff.nm
-              end if
-              effGraf = effGraf.image
             end if
             
             -- Stop once we hit solid ground
@@ -351,32 +348,71 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
           end repeat
           
           if drawQuad then
-            if skyRootsFix then
-              repeat with qdd in quadsToDraw
+            repeat with qdd in quadsToDraw
+              -- Get tip graphic if needed
+              if qdd[8] then
+                effGraf = member("previewImprt")
+                if gLastImported <> cEff.tipGraf then
+                  member("previewImprt").importFileInto("Effects/" & cEff.tipGraf & ".png")
+                  effGraf.name = "previewImprt"
+                  gLastImported = cEff.tipGraf
+                end if
+                effGraf = effGraf.image
+              end if
+              
+              -- Draw the current quad
+              tempLayers = totalLayers
+              tempRepeatL = repeatL.duplicate()
+              if qdd[8] then
+                tempLayers = totalLayersTip
+                tempRepeatL = repeatLTip.duplicate()
+              end if
+              currentImageLayer = 0
+              
+              repeat with dL = 0 to tempLayers-1 then
+                -- Draw
                 if useEffCol then
-                  member("layer"&string(d)).image.copyPixels(qdd[2], qdd[1], qdd[3], {#color:colr, #ink:36})
+                  member("layer"&string(d + dL)).image.copyPixels(qdd[2], qdd[1], qdd[3] + grab.height * currentImageLayer, {#color:colr, #ink:36})
                   if colr <> color(0,255,0) then
                     qddg = qdd[3]
                     if cEff.findPos("hasGrad") then
                       if cEff.hasGrad then qddg = qdd[4]
                     end if
-                    copyPixelsToEffectColor(gdLayer, d, qdd[1], "previewImprt", qddg, 0.5, qdd[6])
+                    copyPixelsToEffectColor(gdLayer, d + dL, qdd[1], "previewImprt", qddg + grab.height * currentImageLayer, 0.5, qdd[6])
                     
                     if cEff.findPos("effectFadeOut2") and qdd[7] > 0 and qdd[8] = 0 then
-                      copyPixelsToEffectColor(gdLayer, d, qdd[5], "softBrush1", member("softBrush1").image.rect, 0.5, qdd[7])
+                      copyPixelsToEffectColor(gdLayer, d + dL, qdd[5], "softBrush1", member("softBrush1").image.rect, 0.5, qdd[7])
                     end if
                   end if
                 else
-                  member("layer"&string(d)).image.copyPixels(qdd[2], qdd[1], qdd[3], {#ink:36})
+                  member("layer"&string(d + dL)).image.copyPixels(qdd[2], qdd[1], qdd[3] + grab.height * currentImageLayer, {#ink:36})
                   if cEff.findPos("forceGrad") then
                     if cEff.forceGrad then
-                      copyPixelsToEffectColor("A", d, qdd[1], "previewImprt", qdd[4], 0.5, qdd[6])
-                      copyPixelsToEffectColor("B", d, qdd[1], "previewImprt", qdd[4], 0.5, qdd[6])
+                      copyPixelsToEffectColor("A", d + dL, qdd[1], "previewImprt", qdd[4] + grab.height * currentImageLayer, 0.5, qdd[6])
+                      copyPixelsToEffectColor("B", d + dL, qdd[1], "previewImprt", qdd[4] + grab.height * currentImageLayer, 0.5, qdd[6])
                     end if
                   end if
                 end if
+                
+                -- Update layer count
+                tempRepeatL[1] = tempRepeatL[1] - 1
+                if tempRepeatL[1] = 0 then
+                  tempRepeatL.deleteAt(1)
+                  currentImageLayer = currentImageLayer + 1
+                end if
               end repeat
-            end if
+              
+              -- Reset graphic after tip
+              if qdd[8] then
+                effGraf = member("previewImprt")
+                if (gLastImported <> cEff.nm) then
+                  member("previewImprt").importFileInto("Effects/" & cEff.nm & ".png")
+                  effGraf.name = "previewImprt"
+                  gLastImported = cEff.nm
+                end if
+                effGraf = effGraf.image
+              end if
+            end repeat
           end if
           
         end if
@@ -420,7 +456,6 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
           
           var = random(cEff.vars)
           if cEff.findPos("strengthAffectVar") then var = random(restrict((cEff.vars*(mtrx[q2][c2]-11+random(21))*0.01).integer, 1, cEff.vars))
-          grab = rect(cEff.pxlSz.locH*(var-1), 1, cEff.pxlSz.locH*var, 1+cEff.pxlSz.locV)
           
           sz = (random(41) + 79) / 100.0 -- default range: 0.8 to 1.2 (inclusive)
           if cEff.findPos("szVar") then
@@ -457,24 +492,35 @@ on ApplyCustomEffect(me, q, c, effectr, efname)
             if cEff.pickColor then useEffCol = 1
           end if
           
-          if useEffCol then
-            member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#color:colr, #ink:36})
-            if colr <> color(0,255,0) then
-              if cEff.findPos("hasGrad") then
-                if cEff.hasGrad then grab = grab + rect(0, cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
+          repeat with dL = 0 to totalLayers-1
+            -- Actually draw
+            grab = rect(cEff.pxlSz.locH*(var-1), 1 + currentImageLayer*cEff.pxlSz.locV, cEff.pxlSz.locH*var, 1+cEff.pxlSz.locV)
+            if useEffCol then
+              member("layer"&string(d+dL)).image.copyPixels(effGraf, qd, grab, {#color:colr, #ink:36})
+              if colr <> color(0,255,0) then
+                if cEff.findPos("hasGrad") then
+                  if cEff.hasGrad then grab = grab + rect(0, cEff.pxlSz.locV * cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
+                end if
+                copyPixelsToEffectColor(gdLayer, d+dL, qd, "previewImprt", grab, 0.5, VOID)
               end if
-              copyPixelsToEffectColor(gdLayer, d, qd, "previewImprt", grab, 0.5, VOID)
-            end if
-          else
-            member("layer"&string(d)).image.copyPixels(effGraf, qd, grab, {#ink:36})
-            if cEff.findPos("forceGrad") then
-              if cEff.forceGrad then
-                grab = grab + rect(0, cEff.pxlSz.locV, 0, cEff.pxlSz.locV)
-                copyPixelsToEffectColor("A", d, qd, "previewImprt", grab, 0.5, VOID)
-                copyPixelsToEffectColor("B", d, qd, "previewImprt", grab, 0.5, VOID)
+            else
+              member("layer"&string(d+dL)).image.copyPixels(effGraf, qd, grab, {#ink:36})
+              if cEff.findPos("forceGrad") then
+                if cEff.forceGrad then
+                  grab = grab + rect(0, cEff.pxlSz.locV * totalImageLayers, 0, cEff.pxlSz.locV)
+                  copyPixelsToEffectColor("A", d+dL, qd, "previewImprt", grab, 0.5, VOID)
+                  copyPixelsToEffectColor("B", d+dL, qd, "previewImprt", grab, 0.5, VOID)
+                end if
               end if
             end if
-          end if
+            
+            -- Update layer count
+            repeatL[1] = repeatL[1] - 1
+            if repeatL[1] = 0 then
+              repeatL.deleteAt(1)
+              currentImageLayer = currentImageLayer + 1
+            end if
+          end repeat
           
         end if
         

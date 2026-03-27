@@ -1,4 +1,4 @@
-Rain World Community Editor; v5.1.0; Editor effects initialisation file
+Rain World Community Editor; v5.1.1; Editor effects initialisation file
 -Natural
 Slime
 Melt
@@ -170,5 +170,3 @@ Spindles
 Ripcords
 Spud Buds
 Cross Roses
-Cables
-Mushroom Colonies

@@ -546,7 +546,7 @@ on newEffect me
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
       
-    "Root Grass", "Growers", "Cacti", "Rain Moss", "Dense Mold", "Seed Pods", "Dandelions", "Grass", "Arm Growers", "Horse Tails", "Circuit Plants", "Storm Plants", "Feather Plants", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Club Moss", "Moss Wall", "Mixed Facing Kelp", "Bubble Grower", "Seed Grass", "Hyacinths", "Orb Plants", "Lollipop Mold", "Og Grass", "Orblings":
+    "Root Grass", "Growers", "Cacti", "Rain Moss", "Dense Mold", "Seed Pods", "Dandelions", "Grass", "Arm Growers", "Horse Tails", "Circuit Plants", "Storm Plants", "Feather Plants", "Mini Growers", "Left Facing Kelp", "Right Facing Kelp", "Club Moss", "Moss Wall", "Mixed Facing Kelp", "Bubble Grower", "Seed Grass", "Hyacinths", "Orb Plants", "Lollipop Mold", "Og Grass", "Orblings", "Ripcords", "Cross Roses":
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
       

@@ -89,7 +89,7 @@ on drawLumpySphereAtPoint pnt, layer, rad, depthRad, col
     
     currentLayer = clamp(lyr - layerOffset, 0, 29)
     
-    member("layer" & currentLayer).image.copyPixels(member("lumpyCircle").image, drawRec, member("lumpyCircle").image.rect, {#color: col, #ink: 36})
+    member("layer" & string(currentLayer)).image.copyPixels(member("lumpyCircle").image, drawRec, member("lumpyCircle").image.rect, {#color: col, #ink: 36})
   end repeat
 end
 

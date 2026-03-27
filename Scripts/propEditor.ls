@@ -255,19 +255,32 @@ on exitFrame me
   end if
   
   stretchSpeed = 0.002
-  if checkCustomKeybind(#PropStretchVerticalIncrease, ["Y", "NOT", " "]) then
-    gPEprops.propStretchY = gPEprops.propStretchY + stretchSpeed
-    mouseStill = 0
-  else if checkCustomKeybind(#PropStretchVerticalDecrease, ["H", "NOT", " "]) then
-    gPEprops.propStretchY = gPEprops.propStretchY - stretchSpeed
-    mouseStill = 0
-  end if
-  if checkCustomKeybind(#PropStretchHorizontalDecrease, ["G", "NOT", " "]) then
-    gPEprops.propStretchX = gPEprops.propStretchX - stretchSpeed
-    mouseStill = 0
-  else if checkCustomKeybind(#PropStretchHorizontalIncrease, ["J", "NOT", " "]) then
-    gPEprops.propStretchX = gPEprops.propStretchX + stretchSpeed
-    mouseStill = 0
+  if gProps[gPEprops.pmPos.locH].prps[gPEprops.pmPos.locV].tp <> "mosaicPlant" then
+    if checkCustomKeybind(#PropStretchVerticalIncrease, ["Y", "NOT", " "]) then
+      gPEprops.propStretchY = gPEprops.propStretchY + stretchSpeed
+      mouseStill = 0
+    else if checkCustomKeybind(#PropStretchVerticalDecrease, ["H", "NOT", " "]) then
+      gPEprops.propStretchY = gPEprops.propStretchY - stretchSpeed
+      mouseStill = 0
+    end if
+    if checkCustomKeybind(#PropStretchHorizontalDecrease, ["G", "NOT", " "]) then
+      gPEprops.propStretchX = gPEprops.propStretchX - stretchSpeed
+      mouseStill = 0
+    else if checkCustomKeybind(#PropStretchHorizontalIncrease, ["J", "NOT", " "]) then
+      gPEprops.propStretchX = gPEprops.propStretchX + stretchSpeed
+      mouseStill = 0
+    end if
+  else
+    gPEprops.propStretchY = gPEprops.propStretchX
+    if checkCustomKeybind(#PropStretchVerticalIncrease, ["Y", "NOT", " "]) or checkCustomKeybind(#PropStretchHorizontalIncrease, ["J", "NOT", " "]) then
+      gPEprops.propStretchY = gPEprops.propStretchY + stretchSpeed
+      gPEprops.propStretchX = gPEprops.propStretchX + stretchSpeed
+      mouseStill = 0
+    else if checkCustomKeybind(#PropStretchVerticalDecrease, ["H", "NOT", " "]) or checkCustomKeybind(#PropStretchHorizontalDecrease, ["G", "NOT", " "]) then
+      gPEprops.propStretchY = gPEprops.propStretchY - stretchSpeed
+      gPEprops.propStretchX = gPEprops.propStretchX - stretchSpeed
+      mouseStill = 0
+    end if
   end if
   
   if checkCustomKeybind(#PropResetStretch, "T") then
@@ -1282,6 +1295,16 @@ on updatePropSettings(mv)
         else if(propSettings[settingCursor] > gPEcolors.count)then
           propSettings[settingCursor] = 0
         end if
+      "effectColor", "flowerColor":
+        effColorArr = ["Color1", "Color2", "Dead"]
+        effColorInd = restrict(effColorArr.getPos(propSettings[settingCursor]) + mv.locH, 1, effColorArr.count)
+        propSettings[settingCursor] = effColorArr[effColorInd]
+      "colorIntensity":
+        colorIntensityArr = ["None", "Low", "Medium", "High", "Random"]
+        colorIntensityInd = restrict(colorIntensityArr.getPos(propSettings[settingCursor]) + mv.locH, 1, colorIntensityArr.count)
+        propSettings[settingCursor] = colorIntensityArr[colorIntensityInd]
+      "hasFlowers":
+        propSettings[settingCursor] = 1 - propSettings[settingCursor]
     end case
   end if
   
@@ -1330,6 +1353,12 @@ on updatePropSettings(mv)
           t = "NONE"
         else
           t = gPEcolors[propSettings[st]][1]
+        end if
+      "hasFlowers":
+        if propSettings[st] then
+          t = "True"
+        else
+          t = "False"
         end if
       otherwise:
         t = propSettings[st].string
@@ -1448,6 +1477,14 @@ on ApplyTransformationTags()
       gPEprops.propFlipY = 1
       gPEprops.propStretchX = 1
       gPEprops.propStretchY = 1
+      
+    "mosaicPlant":
+      gPEprops.propRotation = 0
+      avgStretch = (gPEprops.propStretchX + gPEprops.propStretchY) / 2
+      gPEprops.propStretchX = avgStretch
+      gPEprops.propStretchY = avgStretch
+      gPEprops.propFlipX = 1
+      gPEprops.propFlipY = 1
   end case
   
   
@@ -1652,7 +1689,7 @@ on propPreviewMember(prop)
         --end repeat
       end repeat
       
-    "rope", "long", "customRope", "customLong", "fezTree":
+    "rope", "long", "customRope", "customLong", "fezTree", "mosaicPlant":
       newMem.image = image(member("previewImprt").image.width, member("previewImprt").image.height, 16)
       newMem.image.copyPixels(member("previewImprt").image, newMem.image.rect, member("previewImprt").image.rect)
   end case

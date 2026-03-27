@@ -1,4 +1,4 @@
-global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer
+global vertRepeater, r, gEEprops, solidMtrx, gLEprops, colr, colrDetail, colrInd, gdLayer, gdDetailLayer, gdIndLayer, gLOProps, gLevel, gEffectProps, gViewRender, keepLooping, gRenderCameraTilePos, effectSeed, lrSup, chOp, fatOp, gradAf, effectIn3D, gAnyDecals, gRotOp, slimeFxt, DRDarkSlimeFix, DRWhite, DRPxl, DRPxlRect, colrIntensity, fruitDensity, leafDensity, mshrSzW, mshrSz, hasFlowers, effSide, fingerLen, fingerSz, gCustomEffects, gEffects, gLastImported, skyRootsFix, lampColr, lampLayer, frondSz, gdFrondLayer, colrFrond, swSz
 global blobSize, growOnWalls, needsAttach
 
 
@@ -435,11 +435,29 @@ on effectOnTile me, q, c, q2, c2, effectr
       "Mama Orblings":
         script("AprilEffects").applyMamaOrblings(q, c)
         
+        -- Addy
+      "Ripcords":
+        if (random(100) < effectr.mtrx[q2][c2]) and (random(3) > 1) then
+          script("AddyEffects").ApplyRipcords(q,c)
+        end if
+      "Spud Buds":
+        if (random(100) < effectr.mtrx[q2][c2]) and (random(3) > 1) then
+          script("AddyEffects").ApplySpudBuds(q,c)
+        end if
+      "Cross Roses":
+        if (random(100) < effectr.mtrx[q2][c2]) and (random(3) > 1) then
+          script("AddyEffects").ApplyCrossRoses(q,c)
+        end if
+      "Smoke Weeds":
+        script("AddyEffects").applySmokeWeed(q, c)
+      "Mushroom Colonies":
+        script("AddyEffects").applyMushroomColony(q, c)
+        
         
       otherwise:
         -- Custom effects system
         if (gCustomEffects.getPos(efname) > 0) then
-          script("StandardEffects").ApplyCustomEffect(q, c, effectr, efname)
+          script("InitEffects").ApplyCustomEffect(q, c, effectr, efname)
         end if
     end case
     the randomSeed = savSeed
@@ -517,6 +535,11 @@ on initEffect me
         growOnWalls = (op[3] = "Yes")
       "Needs to be attached to walls":
         needsAttach = (op[3] = "Yes")
+      "Frond Size":
+        frondSz = ["N", "S", "L"][["None", "Small", "Large"].getPos(op[3])]
+      "Frond Color":
+        colrFrond = [color(255, 0, 255), color(0, 255, 255), color(0, 255, 0)][["Color1", "Color2", "Dead"].getPos(op[3])]
+        gdFrondLayer = ["A", "B", "C"][["Color1", "Color2", "Dead"].getPos(op[3])]
     end case
   end repeat
   

@@ -120,7 +120,7 @@ on applyBrainGrowers me, screenX, screenY, amount, upsideDown
       offsetRand = (randomRange(0, 10000)/ 10000.0) * 3.141592 * 2
       
       repeat with segment = 0 to segmentCount do
-        segments[segments.count + 1] = segmentPos
+        segments.add(segmentPos)
         sine = sin(segment * 10.0 + offsetRand)
         if upsideDown then
           segmentPos = segmentPos - (degToVec(sine * 50 + lerp(-5.0, 5.0, randomRange(0, 10000) / 10000.0)) * randomRange(5, 60))
@@ -130,12 +130,11 @@ on applyBrainGrowers me, screenX, screenY, amount, upsideDown
       end repeat
       
       
-      segmentDeriv = []
-      segmentDeriv[1] = point(0, -1)
+      segmentDeriv = [point(0, -1)]
       repeat with segmentIndex = 2 to segments.count - 1
         dir = segments[segmentIndex + 1] - segments[segmentIndex - 1]
         --dir = dir / mag(dir) -- normalize
-        segmentDeriv[segmentIndex] = dir * 0.2
+        segmentDeriv.add(dir * 0.2)
       end repeat
       segmentDeriv[segments.count] = segmentDeriv[segments.count - 1]
       
@@ -274,7 +273,7 @@ on drawWeirdLittleWiggle res, pnt1, lyr1, rad1, v1, e1, pnt2, lyr2, rad2, v2, e2
     
     efct = lerp(e1, e2, factor + lerp(-0.1, 0.1, random(1000) / 1000) + lerp(-0.05, 0.05, offsetSine))
     
-    curvePoints[curvePoints.count + 1] = [pnt, rad, efct]
+    curvePoints.add([pnt, rad, efct])
     
     drawRec = rect(pnt.locH - rad, pnt.locV - rad, pnt.locH + rad, pnt.locV + rad)
     drawRec = rotateToQuad(drawRec, random(360))

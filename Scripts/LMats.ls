@@ -40,8 +40,7 @@ on LIsMyTileSetOpenToThisTile(matName, tl, l)
 end
 
 on LRenderTileMaterial(l, nm, frntImg)
-  -- Random machines and chaotic stone-like materials (made by Alduris with fixes by mothth)
-  -- todo: is it possible to bias for larger tiles?
+  -- Random machines and chaotic stone-like materials (made by Alduris + contributions from Of Incandescence)
   if (DRCustomMatList.count >= 1) then
     matTl = DRCustomMatList[DRLastTL]
     if (matTl.nm <> nm) then
@@ -57,6 +56,7 @@ on LRenderTileMaterial(l, nm, frntImg)
       matPickInfo = matTl.autofit
       pickCats = []
       pickTiles = []
+      pickWeights = []
       pickIgnore = []
       savSeed = the randomSeed
       the randomSeed = gLOprops.tileSeed + l
@@ -66,6 +66,7 @@ on LRenderTileMaterial(l, nm, frntImg)
       end if
       if matPickInfo.findPos(#tiles) then
         pickTiles = matPickInfo.tiles
+        pickWeights = matPickInfo.tileWeights
       end if
       if matPickInfo.findPos(#ignoreTiles) then
         pickIgnore = matPickInfo.ignoreTiles
@@ -107,12 +108,19 @@ on LRenderTileMaterial(l, nm, frntImg)
       tileSelection = []
       repeat with tlGrp in gTiles then
         repeat with tl in tlGrp.tls then
-          if (pickCats.getPos(tlGrp.nm) <> 0 and pickIgnore.getPos(tl.nm) = 0) or (pickTiles.getPos(tl.nm) <> 0) then
+          pos = pickTiles.getPos(tl.nm)
+          if (pickCats.getPos(tlGrp.nm) <> 0 and pickIgnore.getPos(tl.nm) = 0) or (pos <> 0) then
             --tileSelection.add(tl)
             -- Only select tiles with some solid bits
             repeat with spec in tl.specs then
               if spec > 0 then
-                tileSelection.add(tl)
+                weight = 1
+                if pos > 0 then
+                  weight = pickWeights[pos].integer
+                end if
+                repeat with q = 1 to weight
+                  tileSelection.add(tl)
+                end repeat
                 exit repeat
               end if
             end repeat
@@ -121,7 +129,7 @@ on LRenderTileMaterial(l, nm, frntImg)
       end repeat
       
       -- Draw the material
-      if pickTiles.count > 0 then
+      if tileSelection.count > 0 then
         repeat with tl in tls then
           the randomSeed = seedForTile(tl, gLOprops.tileSeed + l)
           if delL.findPos(tl)=void then
@@ -193,6 +201,471 @@ on LRenderTileMaterial(l, nm, frntImg)
     end if
   end if
   return frntImg
+end
+
+
+on LRenderPatternMaterial(l, nm, frntImg)
+  global gEEprops
+
+  -- Custom Temple Stone and Tiled Stone materials (made by Of Incandescence)
+  if (DRCustomMatList.count >= 1) then
+    matTl = DRCustomMatList[DRLastTL]
+
+    if (matTl.nm <> nm) then
+      repeat with inti = 1 to DRCustomMatList.count
+        if (DRCustomMatList[inti].nm = nm) then
+          matTl = DRCustomMatList[inti]
+          DRLastTL = inti
+          exit repeat
+        end if
+      end repeat
+    end if
+
+    if (matTl.nm = nm) then
+
+      -- Search for Pattern Depth / Chaos effects
+      -- Actually a list of matrices, in case one adds more than one instance of the effect on the same layer
+      depthMtrx = []
+      chaosMtrx = []
+      repeat with q = 1 to gEEprops.effects.count then
+        eff = gEEprops.effects[q]
+        case eff.nm of
+          "Pattern Depth":
+            case eff.options[2][3] of --["1", "2", "3"]
+              "1":
+                dmin = 1
+              "2":
+                dmin = 2
+              "3":
+                dmin = 3
+              otherwise:
+                dmin = 1
+            end case
+
+            if (dmin = l) then
+              case eff.options[3][3] of
+                "Increase":
+                  mode = false
+                "Decrease":
+                  mode = true
+                otherwise:
+                  mode = false
+              end case
+              depthMtrx.add([eff.mtrx, mode])
+            end if
+
+          "Pattern Chaos":
+            octaves = 1
+            effSeed = 1
+
+            repeat with op in eff.options
+              case op[1] of
+                "Layers":
+                  case op[3] of--["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"]
+                    "1":
+                      dmin = 1
+                      dmax = 1
+                    "2":
+                      dmin = 2
+                      dmax = 2
+                    "3":
+                      dmin = 3
+                      dmax = 3
+                    "1:st and 2:nd":
+                      dmin = 1
+                      dmax = 2
+                    "2:nd and 3:rd":
+                      dmin = 2
+                      dmax = 3
+                    otherwise:
+                      dmin = 1
+                      dmax = 3
+                  end case
+
+                "Noise Smoothness":
+                  octaves = value(op[3])
+
+                "Seed":
+                  effSeed = op[3]
+              end case
+            end repeat
+
+            if (l >= dmin) and (l <= dmax) then
+              chaosMtrx.add([eff.mtrx, octaves, effSeed])
+            end if
+        end case
+      end repeat
+
+      matInfo = matTl.pattern
+      pickPatterns = []
+      pickTiles = []
+      patterns = []
+      patternWeights = []
+      tileSelection = []
+      repeatSize = point(1,1)
+      savSeed = the randomSeed
+      the randomSeed = gLOprops.tileSeed + l
+
+      if matInfo.findPos(#patterns) then
+        repeat with pattern in matInfo.patterns
+          pickPattern = []
+          patternData = []
+          repeat with pat in pattern[1]
+            pickPattern.add(pat[1])
+            patternData.add([pat[2]]) -- We later add data to this
+          end repeat
+          pickPatterns.add(pickPattern)
+          patterns.add(patternData)
+          patternWeights.add(pattern[2])
+        end repeat
+      end if
+
+      if matInfo.findPos(#tiles) then
+        pickTiles = matInfo.tiles
+        repeat with tl in pickTiles
+          tileSelection.add(VOID)
+        end repeat
+      end if
+
+      if matInfo.findPos(#sz) then
+        repeatSize = matInfo.sz
+      end if
+
+      -- Find tiles with our material
+      tlsOrdered = []
+      repeat with q = 1 to gLOprops.size.loch
+        repeat with c = 1 to gLOprops.size.locv
+          LEPropqc = gLEProps.matrix[q][c][l][1]
+          if (LEPropqc <> 0) then
+            addMe = 0
+            TEPropqc = gTEprops.tlMatrix[q][c][l]
+            if(TEPropqc.tp = "material") then
+              if(TEPropqc.data = matTl.nm) then
+                addMe = 1
+              end if
+            else if (gTEprops.defaultMaterial = matTl.nm)then
+              if (TEPropqc.tp = "default")then
+                addMe = 1
+              end if
+            end if
+
+            if(addMe)then
+              tlsOrdered.add([random(gLOprops.size.loch + gLOprops.size.locV), point(q, c)])
+            end if
+          end if
+        end repeat
+      end repeat
+
+      tlsOrdered.sort()
+      tls = []
+      repeat with q = 1 to tlsOrdered.count
+        tls.add(tlsOrdered[q][2])
+      end repeat
+
+      -- Grab tiles
+      geoTiles = [[], [], [], [], []] -- NE, NW, SE, SW, Floor
+      repeat with tlGrp in gTiles then
+        repeat with tl in tlGrp.tls then
+          -- Check misc tiles
+          pos = pickTiles.getPos(tl.nm)
+          if (pos <> 0) then
+            -- Check if slope or floor
+            if (tl.sz = point(1, 1)) and (tl.specs[1] > 1) and (tl.specs[1] < 7) then
+              geoTiles[tl.specs[1] - 1] = tl
+            -- Not slope
+            else
+              tileSelection[pos] = tl
+            end if
+          end if
+
+          -- Check pattern tiles
+          repeat with pat = 1 to pickPatterns.count
+            pickPattern = pickPatterns[pat]
+            pattern = patterns[pat]
+            pos = pickPattern.getPos(tl.nm)
+            repeat while (pos <> 0) then
+              if (pattern[pos].count = 1) then
+                pattern[pos].add(tl)
+
+                -- Check for tile slopes
+                tileCorners = []
+                repeat with speci = 1 to tl.specs.count then
+                  geo = tl.specs[speci]
+                  if (geo > 1) and (geo < 6) then
+                    loc = point(((speci - 1) / tl.sz.locV - 0.4999).integer, (speci - 1) mod tl.sz.locV)
+                    tileCorners.add([geo - 1, loc])
+                  end if
+                end repeat
+
+                if (tileCorners.count >= 1) then
+                  pattern[pos].add(tileCorners)
+                end if
+              end if
+
+              -- Patterns almost always have the same tile more than once
+              pickPattern[pos] = ""
+              pos = pickPattern.getPos(tl.nm)
+            end repeat
+          end repeat
+        end repeat
+      end repeat
+
+      patternCorners = [[], [], [], []]
+      patterns2 = [[0, patterns[1]]]
+      indPos = point(-1, -1)
+      delL = [:]
+
+      -- Draw pattern
+      repeat with tlPos in tls
+        -- Quick discard
+        if (delL.findPos(tlPos) <> void) then
+          next repeat
+        end if
+
+        if (patterns.count > 1) then
+          indPos2 = floorPoint(tlPos / (repeatSize * 1.0))
+          if (indPos <> indPos2) then
+            indPos = indPos2
+            the randomSeed = seedForTile(indPos, gLOprops.tileSeed + l)
+            patterns2 = []
+            repeat with pat = 1 to patterns.count
+              randV = random(65536)
+              randV = power(randV.float / 65536, patternWeights[pat]) * 65536
+              patterns2.append([randV, patterns[pat]])
+            end repeat
+            patterns2.sort()
+          end if
+        end if
+
+        modPos = point(tlPos.locH mod repeatSize.locH, tlPos.locV mod repeatSize.locV)
+
+        repeat with pat in patterns2 then
+          pattern = pat[2]
+          repeat with patTl in pattern then
+            if (patTl.count <= 1) then
+              next repeat
+            end if
+
+            tl = patTl[2]
+            mdPnt = ceilPoint(tl.sz*0.5) - point(1,1)
+            tlOffs = modPos - patTl[1]
+
+            -- Implemented this way to encourage tiles earlier in the list to be placed first (one of our materials needed this :surv_pleh:)
+            if ((tlOffs+mdPnt).inside(rect(point(0,0), tl.sz))) then
+              drawn = true
+              drawPos = tlPos - tlOffs
+              occupy = []
+
+              repeat with x = 0 to tl.sz.locH-1 then
+                repeat with y = 0 to tl.sz.locV-1 then
+                  -- Only check solid geo
+                  if (tl.specs[x * tl.sz.locV + y + 1] <> 1) then
+                    next repeat
+                  end if
+
+                  loc = point(x,y) - mdPnt
+                  if (checkIfATileIsSolidAndSameMaterial(drawPos + loc, l, nm) = 0) then
+                    drawn = false
+                    exit repeat
+                  end if
+
+                  -- Tile is already occupied
+                  if (delL.findPos(drawPos + loc) <> void) then
+                    drawn = false
+                    exit repeat
+                  end if
+
+                  occupy.add(loc)
+                end repeat
+                if (drawn = false) then exit repeat
+              end repeat
+
+              if (drawn) then
+                frntImg = LDrawADepthTile(drawPos, l, tl, frntImg, depthMtrx, chaosMtrx, occupy)
+
+                -- Corners
+                if (patTl.count > 2) then
+                  repeat with corner in patTl[3] then
+                    loc = drawPos + corner[2] - mdPnt
+                    if (checkIfATileIsSolidAndSameMaterial(loc, l, nm)) then
+                      patternCorners[corner[1]].add(loc)
+                    end if
+                    delL[loc] = 1
+                  end repeat
+                end if
+
+                repeat with occ in occupy
+                  delL[drawPos + occ] = 1
+                end repeat
+
+                exit repeat
+              end if
+            end if
+
+          end repeat
+        end repeat
+      end repeat
+
+      -- Draw remaining corners
+
+      repeat with q = 1 to patternCorners[1].count then
+        ind = patternCorners[1].count + 1 - q
+        tlPos = patternCorners[1][ind]
+        ind2 = patternCorners[4].getPos(tlPos)
+        if (ind2 > 0) then
+          patternCorners[4].deleteAt(ind2)
+          -- patternCorners[1].deleteAt(ind)
+          next repeat
+        end if
+        frntImg = LDrawADepthTile(tlPos, l, geoTiles[4], frntImg, depthMtrx, chaosMtrx, [])
+      end repeat
+
+      repeat with q = 1 to patternCorners[2].count then
+        ind = patternCorners[2].count + 1 - q
+        tlPos = patternCorners[2][ind]
+        ind2 = patternCorners[3].getPos(tlPos)
+        if (ind2 > 0) then
+          patternCorners[3].deleteAt(ind2)
+          -- patternCorners[2].deleteAt(ind)
+          next repeat
+        end if
+        frntImg = LDrawADepthTile(tlPos, l, geoTiles[3], frntImg, depthMtrx, chaosMtrx, [])
+      end repeat
+
+      repeat with q = 1 to patternCorners[3].count then
+        tlPos = patternCorners[3][q]
+        frntImg = LDrawADepthTile(tlPos, l, geoTiles[2], frntImg, depthMtrx, chaosMtrx, [])
+      end repeat
+
+      repeat with q = 1 to patternCorners[4].count then
+        tlPos = patternCorners[4][q]
+        frntImg = LDrawADepthTile(tlPos, l, geoTiles[1], frntImg, depthMtrx, chaosMtrx, [])
+      end repeat
+
+      -- Prepare for final draw and draw remaining slopes and floors
+      tls2 = []
+      repeat with tl in tls
+        if (delL.findPos(tl) = void) then
+          geo = afaMvLvlEdit(point(tl.locH, tl.locV), l)
+          if (geo = 1) then
+            -- Add to final draw list
+            tls2.append(tl)
+          else if (geo > 1) and (geo < 7) then
+            frntImg = LDrawADepthTile(tl, l, geoTiles[geo - 1], frntImg, depthMtrx, chaosMtrx, [])
+            delL[tl] = 1
+          end if
+        end if
+      end repeat
+
+      -- Draw everything else
+      repeat with tlPos in tls2
+        repeat with tl in tileSelection
+          if (tl = void) then
+            next repeat
+          end if
+
+          drawn = true
+          mdPnt = point(((tl.sz.locH*0.5)+0.4999).integer - 1, ((tl.sz.locV*0.5)+0.4999).integer - 1)
+          occupy = []
+
+          repeat with x = 0 to tl.sz.locH-1 then
+            repeat with y = 0 to tl.sz.locV-1 then
+              loc = point(x,y) - mdPnt
+
+              if (checkIfATileIsSolidAndSameMaterial(tlPos + loc, l, nm) = 0) then
+                drawn = false
+                exit repeat
+              end if
+
+              if (delL.findPos(tlPos + loc) <> void) then
+                drawn = false
+                exit repeat
+              end if
+
+              occupy.add(loc)
+            end repeat
+            if (drawn = false) then exit repeat
+          end repeat
+
+          if (drawn) then
+            frntImg = LDrawADepthTile(tlPos, l, tl, frntImg, depthMtrx, chaosMtrx, occupy)
+            repeat with q = 1 to occupy.count then
+              delL[tlPos + occupy[q]] = 1
+            end repeat
+            exit repeat
+          end if
+
+        end repeat
+      end repeat
+      the randomSeed = savSeed
+
+    end if
+  end if
+  return frntImg
+end
+
+-- Primarily intended for LRenderPatternMaterial, hence why it's here
+--  depthMtrx = [[<matrix>, <mode> (FALSE = decrease, TRUE = increase)], ...]
+--  chaosMtrx = [[<matrix>, <octaves>, <seed>], ...]
+-- occupy specifies extra tiles to sample, relative to `loc`.
+on LDrawADepthTile(loc, l, tl, frntImg, depthMtrx, chaosMtrx, occupy)
+  offs = 0
+  effLoc = loc
+  effLoc.locH = restrict(effLoc.locH, 1, gLOprops.size.locH)
+  effLoc.locV = restrict(effLoc.locV, 1, gLOprops.size.locV)
+  if (occupy.count <= 1) then
+    occupy = [point(0,0)]
+  end if
+  -- Contribution from Pattern Depth
+  repeat with mtrx in depthMtrx
+    repeat with occ in occupy
+      loc2 = point(restrict(loc.locH + occ.locH, 1, gLOprops.size.locH), restrict(loc.locV + occ.locV, 1, gLOprops.size.locV))
+      if (mtrx[2] = false) then
+        offs = offs + (mtrx[1][loc2.locH][loc2.locV].float / 10.0)
+      else
+        offs = offs - (mtrx[1][loc2.locH][loc2.locV].float / 10.0)
+      end if
+    end repeat
+  end repeat
+  offs = offs / occupy.count
+  -- Contribution from Pattern Chaos
+  repeat with mtrx in chaosMtrx
+    savSeed = the randomSeed
+    octaves = mtrx[2]
+    noiseVal = 0.0
+    -- norm = 0.0
+    seedLoc = loc
+    repeat with q = 1 to octaves
+      if (q = 1) then
+        the randomSeed = seedForTile(seedLoc, mtrx[3] + q)
+        randVal = (random(10)-5)
+      else
+        -- Bilinear Filter
+        minPnt = floorPoint(seedLoc)
+        maxPnt = minPnt + point(1,1)
+        uv = seedLoc - minPnt
+        the randomSeed = seedForTile(minPnt * q, mtrx[3] + q)
+        x0y0 = (random(10)-5).float
+        the randomSeed = seedForTile(point(maxPnt.locH, minPnt.locV) * q, mtrx[3] + q)
+        x1y0 = (random(10)-5).float
+        the randomSeed = seedForTile(maxPnt * q, mtrx[3] + q)
+        x1y1 = (random(10)-5).float
+        the randomSeed = seedForTile(point(minPnt.locH, maxPnt.locV * q), mtrx[3] + q)
+        x0y1 = (random(10)-5).float
+        y0 = lerp(x0y0, x1y0, uv.locH)
+        y1 = lerp(x0y1, x1y1, uv.locH)
+        randVal = lerp(y0, y1, uv.locV)
+      end if
+      
+      -- norm = norm * 0.5 + 1.0
+      noiseVal = noiseVal * 0.5 + (randVal / 10.0)
+      seedLoc = seedLoc * 0.5
+    end repeat
+    -- noiseVal = noiseVal / norm
+    offs = offs + noiseVal * (mtrx[1][effLoc.locH][effLoc.locV].float / 10.0)
+    the randomSeed = savSeed
+  end repeat
+  return drawATileTile(loc.locH, loc.locV, l, tl, frntImg, [], offs)
 end
 
 

@@ -1,5 +1,5 @@
 global gSaveProps, gTEprops, gTiles, gLEProps, gFullRender, gEEprops, gEffects, gLightEProps, lvlPropOutput, gLEVEL, gLOprops, gLoadedName, gViewRender, gMassRenderL, gCameraProps, gImgXtra, gEnvEditorProps, gPEprops
-global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer
+global altGrafLG, gMegaTrash, showControls, gProps, gLOADPATH, gTrashPropOptions, solidMtrx, INT_EXIT, INT_EXRD, DRCustomMatList, DRLastTL, gCustomEffects, GL_ptPos, GL_drPos, GL_keyDict, gCustomLights, gVersion, ldEvilCangleLayer, gRenderFileCache
 
 on exitFrame me
   gVersion = "v5.0.0"
@@ -40,6 +40,8 @@ on exitFrame me
   ldEvilCangleLayer = FALSE
   gMassRenderL = []
   gLOADPATH = []
+  gRenderFileCache = []
+  gRenderFileCache.sort() -- mark it as sorted to keep it as sorted throughout
   
   gLEVEL = [#timeLimit:4800, #defaultTerrain:1, #maxFlies:10, #flySpawnRate:50, #lizards:[], #ambientSounds:[], #music:"NONE", #tags:[], #lightType:"Static", #waterDrips:1, #lightRect:rect(0,0,1040,800), #matrix:[]]
   
@@ -215,6 +217,7 @@ on exitFrame me
               matTl[#sz] = point(1, 1)
               matTl[#specs] = [0]
               if matTl.findPos(#autofit) then matTl[#renderType] = "customAutofit"
+              else if matTl.findPos(#pattern) then MatTl[#renderType] = "customPattern"
               else matTl[#renderType] = "customUnified"
               DRCustomMatList.add(matTl)
               
@@ -228,7 +231,10 @@ on exitFrame me
                 -- Make sure parts are correct
                 if (not ilk(matTl.autofit, #proplist)) then matTl.autofit = [:]
                 if (not matTl.autofit.findPos(#categories)) then matTl.autofit[#categories] = []
-                if (not matTl.autofit.findPos(#tiles)) then matTl.autofit[#tiles] = []
+                if (not matTl.autofit.findPos(#tiles)) then 
+                  matTl.autofit[#tiles] = []
+                  matTl.autofit[#tileWeights] = []
+                end if
                 if (not matTl.autofit.findPos(#ignoreTiles)) then matTl.autofit[#ignoreTiles] = []      
                 
                 -- Import information
@@ -246,11 +252,70 @@ on exitFrame me
                       1:
                         matTl.autofit.categories.append(matLn)
                       2:
+                        weight = 1
+                        if (MatLn contains ":") then
+                          -- Weight
+                          wOffset = offset(":", matLn)
+                          weight = value(matLn.char[(wOffset+1)..(matLn.length)])
+                          matLn = matLn.char[1..(wOffset-1)]
+                          -- Remove trailing spaces
+                          repeat while (the last char of matLn) = " " then -- matLn.char[matLn.length] gives nothing if whitespace?? forced into lingo-english
+                            -- delete the last char of matLn -- This lingo-english doesnt work in Drizzle
+                            matLn = matLn.char[1..(matLn.length-1)]
+                          end repeat
+                        end if
                         matTl.autofit.tiles.append(matLn)
+                        matTl.autofit.tileWeights.append(weight)
                       3:
                         matTl.autofit.ignoreTiles.append(matLn)
                     end case
                   end if
+                end repeat
+              end if
+              
+              -- Deal with pattern material
+              if (matTl[#renderType] = "customPattern") then
+                afMat = member("initImport")
+                afMat.text = ""
+                member("initImport").importFileInto("Materials/" & matTl.nm & ".txt")
+                afMat.name = "initImport"
+                
+                -- Make sure parts are correct
+                if (not matTl.pattern.findPos(#patterns)) then matTl.pattern[#patterns] = []
+                if (not matTl.pattern.findPos(#tiles)) then matTl.pattern[#tiles] = []
+                if (not matTl.pattern.findPos(#sz)) then matTl.pattern[#sz] = point(1,1)
+                
+                -- Import information
+                importPart = 2 -- tiles by default
+                repeat with matLnNo = 1 to the number of lines in afMat.text
+                  matLn = afMat.text.line[matLnNo]
+                  if (matLn starts "-Pattern") then
+                    -- Multiple patterns can be defined, so each -Pattern starts a new one
+                    importPart = 1
+                    
+                    -- Weight
+                    weight = 1
+                    if (matLn contains ":") then
+                      wOffset = offset(":", matLn)
+                      weight = value(matLn.char[(wOffset+1)..(matLn.length)])
+                    end if
+                    
+                    currentPattern = []
+                    matTl.pattern.patterns.append([currentPattern, weight])
+                    
+                  else if (matLn = "-Tiles") then
+                    importPart = 2
+                    
+                  else if (matLn <> "") then
+                    if (importPart = 1) then
+                      -- Add pattern tile
+                      currentPattern.append(value(matLn))
+                    else
+                      -- Add tile
+                      matTl.pattern.tiles.append(matLn)
+                    end if
+                  end if
+                  
                 end repeat
               end if
             end if
@@ -530,6 +595,9 @@ on exitFrame me
   gProps.add([#nm:"Procedural Plants", #clr:color(0, 255, 0), #prps:[]])
   gProps[gProps.count].prps.add([#nm:"Fez Tree", #tp:"fezTree", #depth:10, #tags:[], #notes:["Click again after placing to determine the position of the tree's base. Press Q or E while in this mode to rotate the base.", "Please note that the preview line does not necessarily indicate the path that the trunk will take."], #previewColor:color(255,0, 0), #author:"Cappin"])
   
+  gProps.add([#nm:"Community Procedural Plants", #clr:color(0, 255, 0), #prps:[]])
+  gProps[gProps.count].prps.add([#nm:"Mosaic Plant", #tp:"mosaicPlant", #depth:2, #tags:[], #notes:["Place in front of the furthest sublayer. Leaves appear in the sublayer in front of stems. Flowers appear in the sublayer in front of leaves and are not counted in the preview range."], #previewColor:color(0,113,53), #author:"Alduris"])
+  
   gTrashPropOptions = []
   gMegaTrash = []
   ntrashPFix = getBoolConfig("notTrashProp fix")
@@ -601,6 +669,12 @@ on exitFrame me
           
         "simpleDecal", "soft", "softEffect", "antimatter", "coloredSoft":
           gProps[q].prps[c].settings.addProp(#customDepth, gProps[q].prps[c].depth)
+          
+        "mosaicPlant":
+          gProps[q].prps[c].settings.addProp(#effectColor, "Color2")
+          gProps[q].prps[c].settings.addProp(#colorIntensity, "Medium")
+          gProps[q].prps[c].settings.addProp(#hasFlowers, False)
+          gProps[q].prps[c].settings.addProp(#flowerColor, "Color1")
       end case
       
       if(gProps[q].prps[c].tp = "soft")or(gProps[q].prps[c].tp = "softEffect")or(gProps[q].prps[c].tp = "variedSoft")or(gProps[q].prps[c].tp = "coloredSoft")then
@@ -738,6 +812,10 @@ on exitFrame me
     gEffects[gEffects.count].efs.add( [#nm:"Brain Growers"])
     gEffects[gEffects.count].efs.add( [#nm:"Upside Down Brain Growers"])
     
+    gEffects.add([#nm:"Pattern Materials", #efs:[]])
+    gEffects[gEffects.count].efs.add( [#nm:"Pattern Depth"])
+    gEffects[gEffects.count].efs.add( [#nm:"Pattern Chaos"])
+    
     gEffects.add([#nm:"LB Plants", #efs:[]])
     gEffects[gEffects.count].efs.add( [#nm:"Colored Hang Roots"]    )
     gEffects[gEffects.count].efs.add( [#nm:"Colored Thick Roots"]   )
@@ -846,6 +924,18 @@ on exitFrame me
       -- contact @slithersss before use:
       gEffects[gEffects.count].efs.add([#nm:"Box Grubs"])
     end if
+    
+    -- Back to your regularly scheduled programming (minus one)
+    gEffects.add([#nm:"Addy Effects", #efs:[]])
+    gEffects[gEffects.count].efs.add([#nm:"Ripcords"])
+    gEffects[gEffects.count].efs.add([#nm:"Spud Buds"])
+    gEffects[gEffects.count].efs.add([#nm:"Cross Roses"])
+    gEffects[gEffects.count].efs.add([#nm:"Cables"])
+    if getBoolConfig("Addy special") then
+      -- Contact @addystrawbry before use
+      gEffects[gEffects.count].efs.add([#nm:"Smoke Weeds"])
+    end if
+    gEffects[gEffects.count].efs.add([#nm:"Mushroom Colonies"])
     
   end if
   

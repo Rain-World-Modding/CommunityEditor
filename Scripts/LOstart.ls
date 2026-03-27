@@ -33,4 +33,6 @@ on exitFrame me
   end if
   
   the randomSeed = _system.milliseconds
+  
+  clearRenderCache()
 end

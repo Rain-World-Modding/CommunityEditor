@@ -162,8 +162,120 @@ on renderProp(prop, dp, qd, mdPoint, data)
       renderLongProp(qd, prop, propsToRender[c][5], dp)
     "fezTree":
       renderFezTree(prop, propsToRender[c][5], dp, data)
+    "mosaicPlant":
+      renderMosaicPlant(qd, mdPoint, prop, propsToRender[c][5].settings, dp, data)
   end case
   DoPropTags(prop, dp, qd)
+end
+
+on renderMosaicPlant(qd, mdPoint, prop, data, lr, propData)
+  -- Init
+  case data.effectColor of
+    "Color1":
+      mpEffColor = "A"
+      colr = color(255,0,255)
+    "Dead":
+      mpEffColor = "C"
+      colr = color(0,255,0)
+    otherwise:
+      mpEffColor = "B"
+      colr = color(0,255,255)
+  end case
+  
+  case data.flowerColor of
+    "Color2":
+      mpFloColor = "B"
+      colrDetail = color(0,255,255)
+    "Dead":
+      mpFloColor = "C"
+      colrDetail = color(0,255,0)
+    otherwise:
+      mpFloColor = "A"
+      colrDetail = color(255,0,255)
+  end case
+  
+  case data.colorIntensity of
+    "High":
+      maxblnd = 0.8
+    "Medium":
+      maxblnd = 0.5
+    "Low":
+      maxblnd = 0.2
+    "Random":
+      maxblnd = random(3) * 0.3 - 0.1
+    "None":
+      maxblnd = 0
+    otherwise:
+      maxblnd = 0.5
+  end case
+  
+  hasFlowers = data.hasFlowers > 0
+  
+  -- Figure out start point
+  startPt = mdPoint - gRenderCameraTilePos*20
+  sz = diag(qd[1], qd[2]) / 2.0
+  
+  -- Figure out leaf locations
+  leaves = []
+  maxIter = random(1500) + 500
+  ofst = random(360.0)
+  pt = startPt
+  i = 1
+  repeat while (diag(startPt, pt) < sz) or (i < 10 + random(6)) then
+    ds = sqrt(i) * 0.3 * 20.0
+    ang = i * PI * (3.0 - sqrt(5.0)) -- golden angle
+    pt = startPt + point(cos(ang + ofst) * ds, sin(ang + ofst) * ds)
+    
+    leaves.append(pt)
+    i = i + 1
+  end repeat
+  
+  -- Filter out further out leaves
+  oldL = leaves.count
+  repeat with i = oldL down to 1 then
+    if random(oldL) < i - 8 then
+      leaves.deleteAt(i)
+    end if
+  end repeat
+  
+  -- FINALLY we get to draw the leaves :3
+  grafSz = point(3, 6.5) -- mult by 2 to get actual size
+  
+  repeat with i = leaves.count down to 1 then -- reverse order for drawing reasons (outwards-in)
+    leafPt = leaves[i]
+    -- stem
+    tl = (startPt + leafPt) / 2.0
+    sz = point(1, (diag(startPt, leafPt)).integer) / 2.0
+    qd = rotateToQuadFix(rect(tl, tl) + rect(-sz, sz), lookAtPoint(leafPt, startPt))
+    member("layer"&string(lr+1)).image.copypixels(member("pxl").image, qd, rect(0,0,1,1), {#color:color(255,0,0), #ink:36})
+    -- leaf
+    tl = leafPt
+    qd = rotateToQuadFix(rect(tl, tl) + rect(-grafSz, grafSz), lookAtPoint(leafPt, startPt))
+    member("layer"&string(lr)).image.copypixels(member("mosaicLeafGraf").image, qd, rect(0,0,6,11), {#color:colr, #ink:36})
+    if data.colorIntensity <> "None" then
+      copyPixelsToEffectColor(mpEffColor, lr, qd, "mosaicLeafGraf", rect(6, 0, 12, 11), 0.5, maxblnd * (1 - (i.float / leaves.count.float) * 0.5))
+    end if
+  end repeat
+  
+  -- Guess what: flowers
+  repeat with i = 1 to (leaves.count / 50.0).integer + 1 then
+    if hasFlowers and random(3) = 1 then
+      ds = random(diag(startPt, leaves[leaves.count])) * 0.45
+      ang = random(360) / PI
+      tl = startPt + point(cos(ang) * ds, sin(ang) * ds)
+      
+      ang = random(360/PI)
+      amt = random(3) + 3
+      flLr = restrict(lr-1, 0, 29)
+      repeat with j = 1 to amt then
+        tl2 = tl + (point(cos(ang), sin(ang)) * 6.5)
+        qd = rotateToQuadFix(rect(tl2, tl2) + rect(-grafSz, grafSz), lookAtPoint(tl2, tl))
+        member("layer"&string(flLr)).image.copypixels(member("mosaicLeafGraf").image, qd, rect(0,0,6,11), {#color:colrDetail, #ink:36})
+        copyPixelsToEffectColor(mpFloColor, flLr, qd, "mosaicLeafGraf", rect(6, 0, 12, 11), 0.5, (random(10) + 90.0) / 100.0)
+        ang = ang + (2 * PI / amt)
+      end repeat
+    end if
+  end repeat
 end
 
 on renderFezTree(prop, data, dp, propData)

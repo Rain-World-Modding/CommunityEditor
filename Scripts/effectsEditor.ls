@@ -542,7 +542,7 @@ on newEffect me
       ef.crossScreen = 1
       
       
-    "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Sprawlroots", "Fungus Roots", "Mama Orblings":
+    "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Sprawlroots", "Fungus Roots", "Mama Orblings", "Mushroom Colonies":
       ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
       ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Color2"])
       
@@ -678,6 +678,35 @@ on newEffect me
       ef.options.add(["Require In-Bounds", ["Yes", "No"], ["No", "Yes"][getBoolConfig("Sky roots fix") + 1]])
       ef.crossScreen = 1
       
+    "Spud Buds":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
+      ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Dead"])
+      ef.options.add(["Frond Size", ["None", "Small", "Large"], "Large"])
+      ef.options.add(["Frond Color", ["Color1", "Color2", "Dead"], "Color2"])
+      ef.options.add(["Require In-Bounds", ["Yes", "No"], ["No", "Yes"][getBoolConfig("Sky roots fix") + 1]])
+      ef.crossScreen = 1
+      
+    "Cables":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
+      ef.options.add(["Fatness", ["1px", "2px", "3px", "random"], "2px"])
+      ef.options.add(["Effect Color", ["EffectColor1", "EffectColor2", "None"], "None"])
+      crossScreen = 1
+      
+    "Smoke Weeds":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "1"])
+      ef.options.add(["Color", ["Color1", "Color2", "Dead"], "Dead"])
+      ef.options.add(["Head Size", ["Small", "Large", "GIANT"], "Large"])
+      ef.options.add(["Flowers", ["Off", "On"], "Off"])
+      ef.crossScreen = 1
+      
+    "Pattern Depth":
+      ef.options.add(["Layer", ["1", "2", "3"], "2"])
+      ef.options.add(["Mode", ["Increase", "Decrease"], "Increase"])
+
+    "Pattern Chaos":
+      ef.options.add(["Layers", ["All", "1", "2", "3", "1:st and 2:nd", "2:nd and 3:rd"], "All"])
+      ef.options.add(["Noise Smoothness", ["1", "2", "3", "4"], "1"])
+      
     otherwise:
       if gCustomEffects.getPos(ef.nm) > 0 then
         if origEf.tp = "individual" or origEf.tp = "individualHanger" or origEf.tp = "individualClinger" then
@@ -751,7 +780,7 @@ on useBrush me, pnt, fac
       end repeat
     end if
     strength = 10 + (90* checkCustomKeybind(#EffectBrushPowerful, "T"))
-    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Foliage", "Mistletoe", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp","Mama Orblings","Fez Tree"].getPos(efName)>0 then
+    if ["BlackGoo", "Fungi Flowers", "Lighthouse Flowers", "Colored Fungi Flowers", "Colored Lighthouse Flowers", "High Fern", "High Grass", "Fern", "Giant Mushroom", "Sprawlbush", "featherFern", "Fungus Tree", "Restore As Scaffolding", "Restore As Pipes", "Foliage", "Mistletoe", "Small Springs", "Super BlackGoo", "Stained Glass Properties", "Cobwebs", "Hand Growers", "Head Lamp", "Sprawlroots", "Fungus Roots", "Ceiling Lamp","Mama Orblings","Fez Tree","Smoke Weeds", "Mushroom Colonies"].getPos(efName)>0 then
       strength = 10000
       if (efName <> "BlackGoo") and (efName <> "Super BlackGoo") and (efName <> "Foliage" or fac > 0) and (efName <> "Mistletoe" or fac > 0) then
         gEEprops.brushSize = 1
@@ -928,7 +957,7 @@ on changeOption me
       gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3] = restrict(gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3], 1, 100)
       
       
-    "Color", "Detail Color", "Fatness", "Size", "Layers", "3D", "Ceramic Color", "Effect Color", "Variation", "Color 1", "Color 2", "Affect Gradients and Decals", "Rotate", "Color Intensity", "Fruit Density", "Mushroom Size", "Mushroom Width", "Flowers", "Side", "Finger Thickness", "Finger Length", "Lamp Color", "Require In-Bounds", "Blob Size", "Should grow on layer behind", "Needs to be attached to walls":
+    "Color", "Detail Color", "Fatness", "Size", "Layers", "3D", "Ceramic Color", "Effect Color", "Variation", "Color 1", "Color 2", "Affect Gradients and Decals", "Rotate", "Color Intensity", "Fruit Density", "Mushroom Size", "Mushroom Width", "Flowers", "Side", "Finger Thickness", "Finger Length", "Lamp Color", "Require In-Bounds", "Blob Size", "Should grow on layer behind", "Needs to be attached to walls", "Frond Color", "Frond Size", "Head Size":
       gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][3] = gEEprops.effects[gEEprops.editEffect].options[gEEprops.emPos.locV][2][gEEprops.emPos.locH]
       
       

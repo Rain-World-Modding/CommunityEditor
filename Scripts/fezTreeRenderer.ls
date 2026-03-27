@@ -30,7 +30,7 @@ on drawFezTreeBranchSegment res, pnt1, lyr1, rad1, dpthRad1, v1, pnt2, lyr2, rad
     dpthRad = lerp(dpthRad1, dpthRad2, factor)
     rad = lerp(rad1, rad2, factor)
     
-    curvePoints[curvePoints.count + 1] = [pnt, lyr]
+    curvePoints.add([pnt, lyr])
     
     drawLumpySphereAtPoint(pnt, lyr, rad + randomRange(lumpinessMin, lumpinessMax), dpthRad, col)
   end repeat
@@ -65,7 +65,7 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
     ind = 1
     repeat with ind = 1 to branchPath.count
       currentPoint = branchPath[ind]
-      newBranchPath[offsetIndex] = currentPoint
+      newBranchPath.add(currentPoint)
       
       -- subdivide if i should
       if subdivideIndex = ind then
@@ -78,10 +78,8 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
         
         middlePoint = middlePoint + point(randomRange(-amountToOffsetX, amountToOffsetX), randomRange(-amountToOffsetY, amountToOffsetY))
         
-        offsetIndex = offsetIndex + 1
-        newBranchPath[offsetIndex] = middlePoint
+        newBranchPath.add(middlePoint)
       end if
-      offsetIndex = offsetIndex + 1
     end repeat
     
     branchPath = newBranchPath
@@ -91,14 +89,13 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
   
   -- calculate the "directions" of each point for catmull-rom smoothing...
   -- special cases for the first / last point because they dont have two neighbors :P
-  branchPathDirections = []
-  branchPathDirections[1] = degToVec(treeBaseAngle + randomRange(-10, 10)) * -25 --point(randomRange(-20, 20), -20)
+  branchPathDirections = [degToVec(treeBaseAngle + randomRange(-10, 10)) * -25] --point(randomRange(-20, 20), -20)
   repeat with branchIndex = 2 to branchPath.count - 1
     dir = branchPath[branchIndex + 1] - branchPath[branchIndex - 1]
     originalDirMag = mag(dir)
     dir = dir * point(2, 1) -- i want more horizontal curving
     dir = (dir / mag(dir)) * originalDirMag -- reset the length
-    branchPathDirections[branchIndex] = (dir) * 0.2
+    branchPathDirections.add(dir * 0.2)
   end repeat
   branchPathDirections[branchPath.count] = degToVec(treeLeavesAngle.float) * 30
   
@@ -112,7 +109,6 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
   currentDistance = 0
   
   currentDistances = []
-  distIndex = 1
   curvePoints = []
   repeat with branchIndex = 1 to branchPath.count - 1
     pnt1 = branchPath[branchIndex]
@@ -122,12 +118,11 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
     v2 = branchPathDirections[branchIndex + 1]
     
     factor1 = currentDistance / totalDistance
-    currentDistances[distIndex] = currentDistance
+    currentDistances.add(currentDistance)
     currentDistance = currentDistance + distanceBetweenPoints(pnt1, pnt2)
     factor2 = currentDistance / totalDistance
     
-    distIndex = distIndex + 1
-    currentDistances[distIndex] = currentDistance
+    currentDistances.add(currentDistance)
     
     layer1 = max(1, (sin(depthOscillations * 3.141592 * factor1) * depthMaxOffset) + treeLayer).integer
     layer2 = max(1, (sin(depthOscillations * 3.141592 * factor2) * depthMaxOffset) + treeLayer).integer

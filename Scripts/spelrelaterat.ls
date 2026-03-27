@@ -366,7 +366,17 @@ on vecToRadLB(vec)
   end if
 end
 
+-- Of Incandescence: Using the hack as seen everywhere else... Did lingo NOT provide floor and ceil functions out of the box?!?!?
+-- Alduris: no. enjoy :3
+on floorPoint(pnt: point)
+  type return: point
+  return point((pnt.locH-0.4999).integer, (pnt.locV-0.4999).integer)
+end
 
+on ceilPoint(pnt: point)
+  type return: point
+  return point((pnt.locH+0.4999).integer, (pnt.locV+0.4999).integer)
+end
 
 
 

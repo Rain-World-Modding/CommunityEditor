@@ -327,7 +327,7 @@ on initDRInternal()
   "AltGrateF2", "AltGrateJ1", "AltGrateJ2", "AltGrateJ3", "AltGrateJ4", "AltGrateK1", "AltGrateK2", "AltGrateK3", "AltGrateK4", "AltGrateL", "AltGrateM", "AltGrateN",\
   "AltGrateO", "Big Big Pipe", "Ring Chain", "Stretched Pipe", "Stretched Wire", "Twisted Thread", "Christmas Wire", "Ornate Wire", "Dune Sand", "Big Chain", "Chunky Chain",\
   "Big Bike Chain", "Huge Bike Chain", "Long Barbed Wire", "Small Chain", "Fat Chain", "Moss Drop", "Moss Drop A", "Moss Drop B", "Moss Hang", "Moss Hang A", "Moss Hang B", \
-  "Small Vents", "Reinforced Duct"]
+  "Small Vents", "Reinforced Duct", "Mosaic Plant"]
   RandomMetals_grabTiles = ["Metal", "Metal construction", "Plate"]
   RandomMetals_allowed = ["Small Metal", "Metal Floor", "Square Metal", "Big Metal", "Big Metal Marked", "C Beam Horizontal AA", "C Beam Horizontal AB", "C Beam Vertical AA", "C Beam Vertical BA", "Plate 2"]
   ChaoticStone2_needed = ["Small Stone", "Square Stone", "Tall Stone", "Wide Stone", "Big Stone", "Big Stone Marked"]
@@ -353,6 +353,38 @@ end
 on checkIsDrizzleRendering()
   -- For Drizzle to override to skip some initialization code that it shouldn't need to care about
   return FALSE
+end
+
+on cacheLoadImage(fileName)
+  -- Drizzle has its own version of this that overrides it so we don't have to worry about that at least yay
+  
+  global gRenderFileCache
+  if gRenderFileCache = void then
+    gRenderFileCache = []
+    gRenderFileCache.sort()
+  end if
+  
+  memName = "cache" && fileName
+  if gRenderFileCache.getPos(memName) = 0 then
+    newMem = new(#bitmap, castLib "customMems")
+    newMem.importFileInto(fileName)
+    newMem.name = memName
+    gRenderFileCache.add(memName)
+    return newMem.image
+  end if
+  
+  return member(memName).image
+end
+
+on clearRenderCache()
+  global gRenderFileCache
+  if gRenderFileCache <> void then
+    repeat with memName in gRenderFileCache
+      member(memName).erase()
+    end repeat
+  end if
+  gRenderFileCache = []
+  gRenderFileCache.sort()
 end
 
 --on freeImageNotFoundEx me

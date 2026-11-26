@@ -97,7 +97,7 @@ on drawFezTreeAtPosition treeBasePos, treeBaseAngle, treeLeavesPos, treeLeavesSi
     dir = (dir / mag(dir)) * originalDirMag -- reset the length
     branchPathDirections.add(dir * 0.2)
   end repeat
-  branchPathDirections[branchPath.count] = degToVec(treeLeavesAngle.float) * 30
+  branchPathDirections.add(degToVec(treeLeavesAngle.float) * 30)
   
   -- approximation of total distance for interpolating branch size etc
   -- not 100% accurate beacuse of spline interpolation. truly do not give a shit.

@@ -2123,10 +2123,10 @@ on renderLongProp(qd, prop, data, dp)
         totalPoints = 0
         totalPoints = points.count
         totalLine = lerp(0.3, 0.7, random(100).float/100)
-        if prop[1] = "Moss Hang A" then 
+        if prop.nm = "Moss Hang A" then 
           eftc = "A"
           colr = color(255, 0, 255)
-        else if prop[1] = "Moss Hang B" then 
+        else if prop.nm = "Moss Hang B" then 
           eftc = "B"
           colr = color(0, 255, 255)
         else

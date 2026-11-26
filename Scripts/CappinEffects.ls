@@ -136,7 +136,7 @@ on applyBrainGrowers me, screenX, screenY, amount, upsideDown
         --dir = dir / mag(dir) -- normalize
         segmentDeriv.add(dir * 0.2)
       end repeat
-      segmentDeriv[segments.count] = segmentDeriv[segments.count - 1]
+      segmentDeriv.add(segmentDeriv[segments.count - 1])
       
       stemEffectFactor = 0.4
       blossomEffectFactor = 0.9

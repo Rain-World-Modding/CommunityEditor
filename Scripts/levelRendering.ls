@@ -1329,7 +1329,7 @@ on drawATileTile(q, c, l, tl, frntImg, dt, offsL)
                 ornt = 1
               end if
               -- put rct
-              member("layer"&string(dp)).image.copypixels(member("bigChainSegment").image, rotateToQuad(rct, degDir), gtRect, {#color:gLOProps.pals[gLOProps.pal].detCol, #ink:36})
+              member("layer"&string(dp)).image.copypixels(member("bigChainSegment").image, rotateToQuad(rct, degDir), gtRect, {#color: color(255,0,0), #ink:36})
               -- member("layer"&string(dp)).image.copypixels(member("bigChainSegment").image, rct, member("bigChainSegment").image.rect, {#color:color(255,0,0), #ink:36})
             end repeat
             
